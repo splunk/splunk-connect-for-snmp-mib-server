@@ -1,0 +1,608 @@
+CYBER-ARK-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Counter32, Gauge32, Counter64,
+    Integer32, enterprises	FROM SNMPv2-SMI;
+
+-- 1.3.6.1.4.1.11536 
+cyberArkMIB MODULE-IDENTITY
+    LAST-UPDATED "200901190000Z"            
+    ORGANIZATION "Cyber ark software ltd."
+    CONTACT-INFO "postal:   Azurim park 
+                            Petah-Tiqwa 49130, Israel 
+		  email:    support@cyber-ark.com" 
+    DESCRIPTION  "CyberArkMIB definition"
+    ::= { enterprises 11536 }
+
+-- 1.3.6.1.4.1.11536.3
+cyberArkTraps        OBJECT IDENTIFIER ::= { cyberArkMIB 3 } 
+
+-- 1.3.6.1.4.1.11536.3.6
+cyberArkTrapPrefix   OBJECT IDENTIFIER ::= { cyberArkTraps 6 } 
+
+paInfo OBJECT IDENTIFIER ::= { cyberArkMIB 1 }
+osInfo OBJECT IDENTIFIER ::= { cyberArkMIB 2 }
+paVaultInfo OBJECT IDENTIFIER ::= { paInfo 1 }
+paCIFSInfo OBJECT IDENTIFIER ::= { paInfo 2 }
+paFTPInfo OBJECT IDENTIFIER ::= { paInfo 3 }
+paSMTPInfo OBJECT IDENTIFIER ::= { paInfo 4 }
+paDRInfo OBJECT IDENTIFIER ::= { paInfo 5 }
+paCVMInfo OBJECT IDENTIFIER ::= { paInfo 6 }
+osEventLogInfo OBJECT IDENTIFIER ::= { osInfo 1 }
+osDiskUsage OBJECT IDENTIFIER ::= { osInfo 3 }
+osMemoryUsage OBJECT IDENTIFIER ::= { osInfo 4}
+osService OBJECT IDENTIFIER ::= { osInfo 5}
+paVaultLogInfo OBJECT IDENTIFIER ::= { paVaultInfo 1 }
+paCIFSLogInfo OBJECT IDENTIFIER ::= { paCIFSInfo 1 }
+paFTPLogInfo OBJECT IDENTIFIER ::= { paFTPInfo 1 }
+paSMTPLogInfo OBJECT IDENTIFIER ::= { paSMTPInfo 1 }
+paDRLogInfo OBJECT IDENTIFIER ::= { paDRInfo 1 }
+paCVMLogInfo OBJECT IDENTIFIER ::= { paCVMInfo 1 }
+
+osDiskDrive OBJECT-TYPE
+    SYNTAX      OCTET STRING 
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Disk drive (or file system) to be checked for free space"
+    DEFVAL { "NoDrive" }
+    ::= { osDiskUsage 1 }
+    
+osDiskPercentageFreeSpace OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Percentage of free disk space on the current drive/filesystem"
+    DEFVAL { "0" }
+    ::= { osDiskUsage 2 }
+
+osDiskFreeSpace OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Free disk space in MB on the current drive/filesystem"
+    DEFVAL { "0" }
+    ::= { osDiskUsage 3 }
+	
+osDiskTrapState OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "State"
+    DEFVAL { "None" }
+    ::= { osDiskUsage 4 }
+
+osCpuUsage OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Cpu Usage percentage"
+    DEFVAL { "Idle" }
+    ::= { osInfo 2 }
+	
+osCpuTrapState OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Trap State"
+    DEFVAL { "State" }
+    ::= { osInfo 6 }
+
+osELName OBJECT-TYPE
+    SYNTAX      OCTET STRING 
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"Event name of an o.s. event log"
+    DEFVAL { "Unknown" }
+    ::= { osEventLogInfo 1 }
+
+osELEventId OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"Event id of an o.s. event log record"
+    DEFVAL { 1 }
+    ::= { osEventLogInfo 2 }
+
+osELTimeGenerated OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"This variable holds the time stamp of the current event log record"
+    DEFVAL { "Now" }
+    ::= { osEventLogInfo 3 }
+
+osELEventType OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Enumerator which represents the type of the current event"
+    DEFVAL { 1 }
+    ::= { osEventLogInfo 4 }
+
+osELEventSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The source name of the current event"
+    DEFVAL { "System" }
+    ::= { osEventLogInfo 5 }
+
+osELComputerName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The computer who generated the current record"
+    DEFVAL { "Localhost" }
+    ::= { osEventLogInfo 6 }
+
+osELEventDescription OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Description of the current event"
+    DEFVAL { "None" }
+    ::= { osEventLogInfo 7 }
+
+
+osMemoryTotalKbPhysical OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Total physical memory in kilobytes"
+    DEFVAL { "None" }
+    ::= { osMemoryUsage 1 }
+
+osMemoryAvailKbPhysical OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Available physical memory in kilobytes"
+    DEFVAL { "None" }
+    ::= { osMemoryUsage 2 }
+
+osMemoryTotalKbSwap OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Total swap memory in kilobytes"
+    DEFVAL { "None" }
+    ::= { osMemoryUsage 3 }
+
+osMemoryAvailKbSwap OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Available swap memory in kilobytes"
+    DEFVAL { "None" }
+    ::= { osMemoryUsage 4 }
+
+osMemoryTrapState OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "State"
+    DEFVAL { "0" }
+    ::= { osMemoryUsage 5 }
+	
+osServiceName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Service name"
+    DEFVAL { "None" }
+    ::= { osService 1 }
+
+osServiceStatus OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Service status"
+    DEFVAL { "None" }
+    ::= { osService 2 }
+	
+osServiceTrapState OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "State"
+    DEFVAL { "0" }
+    ::= { osService 3 }
+
+paVaultLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Vault log name"
+    DEFVAL { "None" }
+    ::= { paVaultLogInfo 1 }
+
+paVaultLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Vault log source"
+    DEFVAL { "None" }
+    ::= { paVaultLogInfo 2 }
+
+paVaultLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Vault log record"
+    DEFVAL { "None" }
+    ::= { paVaultLogInfo 3 }
+
+
+paCIFSLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CIFS log name"
+    DEFVAL { "None" }
+    ::= { paCIFSLogInfo 1 }
+
+paCIFSLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CIFS log source"
+    DEFVAL { "None" }
+    ::= { paCIFSLogInfo 2 }
+
+paCIFSLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CIFS log record"
+    DEFVAL { "None" }
+    ::= { paCIFSLogInfo 3 }
+
+paFTPLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "FTP log name"
+    DEFVAL { "None" }
+    ::= { paFTPLogInfo 1 }
+
+paFTPLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "FTP log source"
+    DEFVAL { "None" }
+    ::= { paFTPLogInfo 2 }
+
+paFTPLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "FTP log record"
+    DEFVAL { "None" }
+    ::= { paFTPLogInfo 3 }
+
+paSMTPLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "SMTP log name"
+    DEFVAL { "None" }
+    ::= { paSMTPLogInfo 1 }
+
+paSMTPLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "SMTP log source"
+    DEFVAL { "None" }
+    ::= { paSMTPLogInfo 2 }
+
+paSMTPLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "SMTP log record"
+    DEFVAL { "None" }
+    ::= { paSMTPLogInfo 3 }
+
+paDRLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Cyber-Ark disaster recovery log name"
+    DEFVAL { "None" }
+    ::= { paDRLogInfo 1 }
+
+paDRLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Cyber-Ark disaster recovery log source"
+    DEFVAL { "None" }
+    ::= { paDRLogInfo 2 }
+
+paDRLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Cyber-Ark disaster recovery log record"
+    DEFVAL { "None" }
+    ::= { paDRLogInfo 3 }
+
+paCVMLogName OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CyberArk Cluster Vault Manager log name"
+    DEFVAL { "None" }
+    ::= { paCVMLogInfo 1 }
+
+paCVMLogSource OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CyberArk Cluster Vault Manager log source"
+    DEFVAL { "None" }
+    ::= { paCVMLogInfo 2 }
+
+paCVMLogRecord OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "CyberArk Cluster Vault Manager log record"
+    DEFVAL { "None" }
+    ::= { paCVMLogInfo 3 }
+	
+-- 1.3.6.1.4.1.11536.3.6.3
+osDiskFreeSpaceNotification NOTIFICATION-TYPE
+    OBJECTS { osDiskDrive, osDiskPercentageFreeSpace, osDiskFreeSpace, osDiskTrapState }
+    STATUS  current
+    DESCRIPTION
+        "disk free space"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Drive %s has only %d precent left (%dMb)."
+  --#ARGUMENTS {0,1,2}
+    ::= { cyberArkTrapPrefix 3 }
+
+-- 1.3.6.1.4.1.11536.3.6.1
+osCpuUsageNotification NOTIFICATION-TYPE
+    OBJECTS { osCpuUsage, osCpuTrapState }
+    STATUS  current
+    DESCRIPTION
+        "cpu usage"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "CPU load is %d precent."
+  --#ARGUMENTS {0}
+    ::= { cyberArkTrapPrefix 1 }
+
+-- 1.3.6.1.4.1.11536.3.6.0
+osEventLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { osELName, osELEventId, osELTimeGenerated, osELEventType, osELEventSource, 
+                osELComputerName, osELEventDescription}
+    STATUS  current
+    DESCRIPTION
+        "event log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Event log record: %s."
+  --#ARGUMENTS {6}
+    ::= { cyberArkTrapPrefix 0 }
+    
+-- 1.3.6.1.4.1.11536.3.6.2
+osMemoryUsageNotification NOTIFICATION-TYPE
+    OBJECTS  { osMemoryTotalKbPhysical,osMemoryAvailKbPhysical,osMemoryTotalKbSwap,osMemoryAvailKbSwap,osMemoryTrapState}
+    STATUS  current
+    DESCRIPTION
+        "physical memory"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Total Physical memory: %dKb, Available: %dKb.\ Total Swap memory: %dKb, Available: %dKb."
+  --#ARGUMENTS {0,1,2,3}
+    ::= { cyberArkTrapPrefix 2 }
+
+-- 1.3.6.1.4.1.11536.3.6.5
+osSwapMemoryUsageNotification NOTIFICATION-TYPE
+    OBJECTS  { osMemoryTotalKbPhysical,osMemoryAvailKbPhysical,osMemoryTotalKbSwap,osMemoryAvailKbSwap,osMemoryTrapState}
+    STATUS  current
+    DESCRIPTION
+        "swap memory"
+    ::= { cyberArkTrapPrefix 5 } 
+ 
+-- 1.3.6.1.4.1.11536.3.6.4
+osServiceNameNotification NOTIFICATION-TYPE
+    OBJECTS  { osServiceName,osServiceStatus,osServiceTrapState}
+    STATUS  current
+    DESCRIPTION
+        "service status"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Service %s is %s."
+  --#ARGUMENTS {0,1}
+    ::= { cyberArkTrapPrefix 4 }
+    
+-- 1.3.6.1.4.1.11536.3.6.1000
+paVaultLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paVaultLogRecord, paVaultLogSource, paVaultLogName}
+    STATUS  current
+    DESCRIPTION
+        "vault log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Vault log record: %s - %s: %s."
+  --#ARGUMENTS {1,2,0}
+    ::= { cyberArkTrapPrefix 1000 }
+    
+-- 1.3.6.1.4.1.11536.3.6.1001
+paVaultServiceNameNotification NOTIFICATION-TYPE
+    OBJECTS  { osServiceName,osServiceStatus,osServiceTrapState}
+    STATUS  current
+    DESCRIPTION
+        "service status"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "Vault Service %s is %s."
+  --#ARGUMENTS {0,1}
+    ::= { cyberArkTrapPrefix 1001 }
+
+-- 1.3.6.1.4.1.11536.3.6.5000
+paDRLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paDRLogName, paDRLogSource ,paDRLogRecord}
+    STATUS  current
+    DESCRIPTION
+        "padr log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "PADR log record: %s - %s: %s."
+  --#ARGUMENTS {1,0,2}
+    ::= { cyberArkTrapPrefix 5000 }
+
+-- 1.3.6.1.4.1.11536.3.6.5001
+osDRServiceNameNotification NOTIFICATION-TYPE
+    OBJECTS  { osServiceName,osServiceStatus,osServiceTrapState}
+    STATUS  current
+    DESCRIPTION
+        "service status"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "PADR Service %s is %s."
+  --#ARGUMENTS {0,1}
+    ::= { cyberArkTrapPrefix 5001 }
+	
+-- 1.3.6.1.4.1.11536.3.6.6000
+paCVMLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paCVMLogName, paCVMLogSource ,paCVMLogRecord}
+    STATUS  current
+    DESCRIPTION
+        "cvm log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "CVM log record: %s - %s: %s."
+  --#ARGUMENTS {1,0,2}
+    ::= { cyberArkTrapPrefix 6000 }
+
+-- 1.3.6.1.4.1.11536.3.6.6001
+osCVMServiceNameNotification NOTIFICATION-TYPE
+    OBJECTS  { osServiceName,osServiceStatus,osServiceTrapState}
+    STATUS  current
+    DESCRIPTION
+        "service status"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "CVM Service %s is %s."
+  --#ARGUMENTS {0,1}
+    ::= { cyberArkTrapPrefix 6001 }
+
+-- 1.3.6.1.4.1.11536.3.6.2000
+paCIFSLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paCIFSLogRecord, paCIFSLogSource, paCIFSLogName}
+    STATUS  current
+    DESCRIPTION
+        "cifs log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "CIFS log record: %s - %s: %s."
+  --#ARGUMENTS {1,2,0}
+    ::= { cyberArkTrapPrefix 2000 }
+    
+-- 1.3.6.1.4.1.11536.3.6.2001
+osCIFSServiceNameNotification NOTIFICATION-TYPE
+    OBJECTS  { osServiceName,osServiceStatus}
+    STATUS  current
+    DESCRIPTION
+        "service status"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "CIFS Service %s is %s."
+  --#ARGUMENTS {0,1}
+    ::= { cyberArkTrapPrefix 2001 }
+    
+-- 1.3.6.1.4.1.11536.3.6.3000
+paFTPLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paFTPLogRecord, paFTPLogSource, paFTPLogName}
+    STATUS  current
+    DESCRIPTION
+        "ftp log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "FTP log record: %s - %s: %s."
+  --#ARGUMENTS {1,2,0}
+    ::= { cyberArkTrapPrefix 3000 }
+    
+-- 1.3.6.1.4.1.11536.3.6.4000
+paSMTPLogInfoNotification NOTIFICATION-TYPE
+    OBJECTS  { paSMTPLogRecord, paSMTPLogSource, paSMTPLogName}
+    STATUS  current
+    DESCRIPTION
+        "smtp log info"
+  --#SEVERITY  CRITICAL
+  --#CATEGORY  "Error Events"
+  --#SUMMARY "SMTP log record: %s - %s: %s."
+  --#ARGUMENTS {1,2,0}
+    ::= { cyberArkTrapPrefix 4000 }
+    
+-- 1.3.6.1.4.1.11536.5 
+cyberArkTrapGroup NOTIFICATION-GROUP 
+    NOTIFICATIONS { osDiskFreeSpaceNotification, osCpuUsageNotification, osEventLogInfoNotification, 
+					osMemoryUsageNotification, osServiceNameNotification, paVaultLogInfoNotification, 
+					paVaultServiceNameNotification, paDRLogInfoNotification, osDRServiceNameNotification, 
+					paCIFSLogInfoNotification, osCIFSServiceNameNotification, paFTPLogInfoNotification, 
+					paSMTPLogInfoNotification } 
+    STATUS  current 
+    DESCRIPTION 
+        "Group of notifications" 
+    ::= { cyberArkMIB 5 } 
+
+-- 1.3.6.1.4.1.11536.6 
+cyberArkTrapGroup NOTIFICATION-GROUP 
+    NOTIFICATIONS { osDiskFreeSpaceNotification, osCpuUsageNotification, osEventLogInfoNotification, 
+					osMemoryUsageNotification, osServiceNameNotification, paVaultLogInfoNotification, 
+					paVaultServiceNameNotification, paCVMLogInfoNotification, osCVMServiceNameNotification, 
+					paCIFSLogInfoNotification, osCIFSServiceNameNotification, paFTPLogInfoNotification, 
+					paSMTPLogInfoNotification } 
+    STATUS  current 
+    DESCRIPTION 
+        "Group of notifications" 
+    ::= { cyberArkMIB 6 } 
+    
+END
