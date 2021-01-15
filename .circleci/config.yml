@@ -29,8 +29,8 @@ jobs:
       - run:
           name: Github packages push
           command: |
-            docker tag sc4snmp-mib-server ghcr.io:splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
-            docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
+            docker tag sc4snmp-mib-server ghcr.io/splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
+            docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
             mkdir -p build-container || true
             docker save sc4snmp-mib-server | gzip -c > build-container/oci_container.tar.gz
       - store_artifacts:
@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Github packages docker Login
           command: |
-            docker pull ghcr.io:splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
+            docker pull ghcr.io/splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
       - run:
           name: Release Docker Hub
           command: |
@@ -72,33 +72,33 @@ jobs:
 
             docker build -f Dockerfile . -t release
 
-            docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION
-            docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION
-            docker save ghcr.io:splunk/splunk-connect-for-snmp-mib-server:${VERSION} | gzip -c > /tmp/workspace/oci_container.tar.gz
+            docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION
+            docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION
+            docker save ghcr.io/splunk/splunk-connect-for-snmp-mib-server:${VERSION} | gzip -c > /tmp/workspace/oci_container.tar.gz
 
-            docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
-            docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
+            docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
+            docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:<< pipeline.git.revision >>
 
-            docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:${CIRCLE_SHA1:0:7}
-            docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:${CIRCLE_SHA1:0:7}
+            docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:${CIRCLE_SHA1:0:7}
+            docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:${CIRCLE_SHA1:0:7}
 
             if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               #latest
-              docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:latest
-              docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:latest
+              docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:latest
+              docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:latest
               #MMP
-              docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MMP
-              docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MMP
+              docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MMP
+              docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MMP
               #MM
-              docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MM
-              docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MM
+              docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MM
+              docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_MM
               #M
-              docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_M
-              docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_M
+              docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_M
+              docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:$VERSION_DOCKER_M
             else
               #edge
-              docker tag release ghcr.io:splunk/splunk-connect-for-snmp-mib-server:edge
-              docker push ghcr.io:splunk/splunk-connect-for-snmp-mib-server:edge
+              docker tag release ghcr.io/splunk/splunk-connect-for-snmp-mib-server:edge
+              docker push ghcr.io/splunk/splunk-connect-for-snmp-mib-server:edge
             fi
       - run:
           name: "Publish on GitHub"
