@@ -1,0 +1,11 @@
+server {
+        listen   9000;
+        root   /usr/share/nginx/html;
+        location / {
+                index index.html;
+        }
+        location /asn1 {
+               autoindex on;
+        }
+
+}
