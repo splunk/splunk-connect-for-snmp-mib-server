@@ -20,7 +20,7 @@ jobs:
       - run:
           name: Github packages docker Login
           command: |
-            docker login ghcr.io -u $GITHUB_USER -p $GITHUB_TOKEN
+            docker login ghcr.io -u $GH_USER -p $GH_TOKEN
       - run:
           name: "Build Image"
           command: |
@@ -57,7 +57,7 @@ jobs:
       - run:
           name: Docker Login
           command: |
-            docker login ghcr.io -u $GITHUB_USER -p $GITHUB_TOKEN
+            docker login ghcr.io -u $GH_USER -p $GH_TOKEN
       - run:
           name: Github packages docker Login
           command: |
@@ -108,7 +108,7 @@ jobs:
             export VERSION=${CIRCLE_TAG:=CIRCLE_SHA1}      
             echo ${VERSION} >package/VERSION
             [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && ISPRE="-prerelease"
-            $HOME/go/bin/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} ${VERSION} /tmp/workspace/
+            $HOME/go/bin/ghr -t ${GH_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} ${VERSION} /tmp/workspace/
       - store_artifacts:
           path: /tmp/workspace/
 
