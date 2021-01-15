@@ -106,7 +106,6 @@ jobs:
             go get -v -u github.com/tcnksm/ghr
             PATH=$PATH:/usr/local/go/bin
             export VERSION=${CIRCLE_TAG:=CIRCLE_SHA1}      
-            echo ${VERSION} >package/VERSION
             [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && ISPRE="-prerelease"
             $HOME/go/bin/ghr -t ${GH_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} ${VERSION} /tmp/workspace/
       - store_artifacts:
