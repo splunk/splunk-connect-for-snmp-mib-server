@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../')
 import yaml
-# from flask_server.mongo import OidsRepository
-from flask_server.translator import Translator
+# from splunk_connect_for_snmp_mib_server.mongo import OidsRepository
+from splunk_connect_for_snmp_mib_server.translator import Translator
 import os
 import logging
 logger = logging.getLogger(__name__)

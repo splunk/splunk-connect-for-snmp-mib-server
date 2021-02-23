@@ -3,11 +3,8 @@ import os
 import json
 import csv
 import logging
-import sys
-import subprocess
-import requests
 
-from flask_server.mongo import OidsRepository, MibsRepository
+from splunk_connect_for_snmp_mib_server.mongo import OidsRepository, MibsRepository
 
 from pysmi import debug as pysmi_debug
 pysmi_debug.setLogger(pysmi_debug.Debug('compiler'))
@@ -35,7 +32,6 @@ class Translator:
     # build a mibs collectoin in mongo
     def build_mibs_collection(self, mib_mongo_config):
         mibs_collection = MibsRepository(mib_mongo_config)
-        logger.debug(f"=======mib_mongo_config: {mib_mongo_config}===========")
         return mibs_collection
 
     def build_mib_compiler(self, load_list):
@@ -51,7 +47,7 @@ class Translator:
         logger.debug(mibBuilder.getMibSources())
         logger.debug('done')
 
-        mib_file_path = os.path.join(os.getcwd(), "..", self._load_list)
+        mib_file_path = os.path.join(os.getcwd(), self._load_list)
         logger.debug(f"mib_file_path {mib_file_path}")
         with open(mib_file_path) as mib_files:
             reader = csv.reader(mib_files)
@@ -69,17 +65,7 @@ class Translator:
         logger.debug("compiler is loaded")
 
         return mibBuilder, mibViewController
-    
-    # def first_mib_translation_trigger(self):
-    #     # This is a test TRAP PDU
-    #     var_binds = [
-    #         ('1.3.6.1.2.1.1.3.0', 12345),
-    #         ('1.3.6.1.6.3.1.1.4.1.0', '1.3.6.1.6.3.1.1.5.2')
-    #     ]
 
-    #     for name, val in var_binds:
-    #         self.mib_translator(name, val)
-    #     logger.debug("mib_translator is ready to use!")
 
     def first_mib_translation_trigger(self):
         # This is a test TRAP PDU
@@ -114,7 +100,7 @@ class Translator:
         return len(temp) >= 2 and temp[-2].isnumeric()
     
     def write_mib_to_load_list(self, mib_name):
-        mib_file_path = os.path.join(os.getcwd(), "..", self._load_list)
+        mib_file_path = os.path.join(os.getcwd(), self._load_list)
         logger.debug(f"mib_file_path: {mib_file_path}")
         try:
             with open(mib_file_path, 'a') as mib_list_file:
@@ -129,29 +115,11 @@ class Translator:
     def find_mib_file(self, oid):
         snmp_config = self._server_config["snmp"]
         value_tuple=str(oid).replace(".",", ")
-        # try:
-        #     # TODO relace the grep with Flask server API call
-        #     val_direct_output = subprocess.check_output("grep -rl {value} {path}".format(value=value_tuple, path=snmp_config["mibs"]["dir"]), shell=True)
-        # except Exception as e:
-        #     logger.warn(f"Can NOT find the mib file for the oid-{oid}: {e}")
-        #     logger.debug(f"Writing the oid-{oid} into mongo")
-        #     try:
-        #         self._mongo_oids_coll.add_oid(str(oid))
-        #         logger.debug(f"[-] The oid - {oid} was added into mongo")
-        #     except Exception as e:
-        #         logger.error(f"Error happened during add the oid - {oid} into mongo: {e}")
-        #     return
-
-        # logger.debug(f"val_direct_output: {val_direct_output}")
-        # mib_name =str(val_direct_output, 'utf-8').split("/")[-1].strip()[:-3]
         
-        # Search the oid in mongo mibs collection
-        logger.debug(f"****{type(value_tuple)}****value_tuple: {value_tuple}*************")
         try:
             mib_name = self._mongo_mibs_coll.search_oid(value_tuple)
         except Exception as e:
             logger.error(f"Error happened during search the oid in mongo mibs collection: {e}")
-        logger.debug(f"*************mib_name: {mib_name}************")
         if not mib_name:
             logger.warn(f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}")
             logger.debug(f"Writing the oid-{oid} into mongo")
@@ -197,7 +165,6 @@ class Translator:
 
 
     # Translate SNMP PDU varBinds into MIB objects using MIB
-    # def mib_translator(self, name, val):
     def mib_translator(self, var_bind):
         
         # Run var-binds through MIB resolver
@@ -212,7 +179,6 @@ class Translator:
             trans_string = varBind.prettyPrint().replace(" = ", "=")
             trans_oid = trans_string.split("=")[0]
             trans_val = trans_string.split("=")[1]
-            # valType = val.__class__.__name__
             valType = var_bind["val_type"]
             
             try:
@@ -255,7 +221,7 @@ class Translator:
     def get_custom_translation_table(self):
         translation_table = {}
         logger.debug(f"cwd {os.getcwd()}")
-        file_path = os.path.join(os.getcwd(), "..", "lookups/custom_mib_string_table.csv")
+        file_path = os.path.join(os.getcwd(), "lookups/custom_mib_string_table.csv")
         logger.debug(f"file_path {file_path}")
         with open(file_path) as files:
             reader = csv.reader(files)
@@ -272,13 +238,9 @@ class Translator:
         # for name, val in var_binds:
         for var_bind in var_binds:
             # extract oid and value
-            # oid = name.prettyPrint()
-            # value = val.prettyPrint()
             oid = var_bind["oid"]
             value = var_bind["val"]
             # Extrat the types
-            # nameType = name.__class__.__name__
-            # valType = val.__class__.__name__
             nameType = var_bind["oid_type"]
             valType = var_bind["val_type"]
 

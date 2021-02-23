@@ -1,5 +1,8 @@
 from pymongo import MongoClient
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class MibsRepository:
     def __init__(self, mongo_config):
@@ -15,14 +18,22 @@ class MibsRepository:
         Upload mib files from dir to mongo
         @param mib_files_dir: the path of the mib files directory
         """
+        # TODO check duplicate before insert, using filename as PK
         for filename in os.listdir(mib_files_dir):
             file_path =  mib_files_dir + "/" + filename
             # print(file_path)
             with open (file_path,'r') as mib_file:
-                self._mibs.insert_one(dict(
-                content = mib_file.read(),
-                filename = filename
-            ))
+                # TODO add try catch, insert only if PK doesn't exit
+                try:
+                    self._mibs.insert_one(dict(
+                    content = mib_file.read(),
+                    filename = filename,
+                    _id = filename
+                    ))
+                except Exception as e:
+                    logger.error(f"Error happened during insert mib files {filename} into mongo: {e}")
+
+                    
 
     def search_oid(self, oid):
         """

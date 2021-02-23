@@ -1,17 +1,14 @@
 snmp:
-  communities:
-    v1:
-      - public
-      - "my-area"
   mibs:
     url:
       - "file:///usr/share/snmp/mibs"
       # *TODO*: Replace below URL with MIB Server's URL returned during service discovery. 
-      - "http://mibs.thola.io/pysnmp/@mib@"
+      # - "http://mibs.thola.io/asn1/@mib@"
+      - "http://localhost:5000/files/asn1/@mib@"
     # dir: "/work/mibs"
     dir: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs/pysnmp"
-    # dir: "http://mibs.thola.io/pysnmp/"
     load_list: "lookups/mibs_list.csv"
+    mibs_path: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs"
 mongo:
   oid:
     host: "localhost"
