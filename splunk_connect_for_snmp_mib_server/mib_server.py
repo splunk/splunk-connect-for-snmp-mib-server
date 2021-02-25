@@ -46,5 +46,5 @@ class MibServer:
     
     def run_mib_server(self):
         # TODO poetry run fails when debug=True
-        self._flask_app.run(port=self._args.port)
+        self._flask_app.run(host="0.0.0.0",port=self._args.port)
 
