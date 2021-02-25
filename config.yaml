@@ -1,0 +1,25 @@
+snmp:
+  mibs:
+    url:
+      - "file:///usr/share/snmp/mibs"
+      # *TODO*: Replace below URL with MIB Server's URL returned during service discovery. 
+      # - "http://mibs.thola.io/asn1/@mib@"
+      - "http://localhost:5000/files/asn1/@mib@"
+    dir: "/work/mibs/pysnmp"
+    # dir: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs/pysnmp"
+    load_list: "lookups/mibs_list.csv"
+    mibs_path: "/work/mibs"
+    # mibs_path: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs"
+mongo:
+  oid:
+    # host: "localhost"
+    host: "mongo"
+    port: 27017
+    database: "snmp_traps"
+    collection: "oids"
+  mib:
+    # host: "localhost"
+    host: "mongo"
+    port: 27017
+    database: "files"
+    collection: "mib_files"
