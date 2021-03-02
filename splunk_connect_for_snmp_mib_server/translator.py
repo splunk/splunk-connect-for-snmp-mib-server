@@ -189,7 +189,7 @@ class Translator:
                     self.find_mib_file(name)
 
                 # Check if value exists in mongo oids collection and if value was translated properly when value is OID type
-                if valType == "ObjectIdentifier":
+                if valType == "ObjectIdentifier" or valType == "ObjectIdentity":
                     no_mapping_mib_val = self.check_mongo(val)
                     logger.debug(f"no_mapping_mib_val: {no_mapping_mib_val}")
                     if not no_mapping_mib_val and self.is_not_translated(val, trans_val):
@@ -269,7 +269,7 @@ class Translator:
                     )
                 )
             else:
-                custom_translated_oid = ""
+                custom_translated_mib_string = ""
 
             original_value = "value{offset}={value}".format(offset=offset, value=value)
             val_type_string = "value{offset}-type={val_type}".format(
