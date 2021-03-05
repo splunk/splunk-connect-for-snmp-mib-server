@@ -30,17 +30,26 @@ class MibServer:
         @app.route('/files/')
         @app.route('/files/<path:path>')
         def autoindex(path='.'):
-            print(f"path: {path}")
+            logger.debug(f"path: {path}")
             return files_index.render_autoindex(path)
 
         # Translate oid
         @app.route('/translation', methods=['POST'])
         def translator():
-            print(request.json)
+            logger.debug(request.json)
             var_binds = request.json.get('var_binds')
-            print(f"type of var_binds: {type(var_binds)}")
-            print(f"var_binds: {var_binds}")
-            return self._translator.format_trap_event(var_binds)
+            metric = request.args.get("metric")
+            logger.debug(f"type of var_binds: {type(var_binds)}")
+            logger.debug(f"var_binds: {var_binds}")
+            logger.debug(f"type of metric: {str(metric)} -- metric: {metric}")
+            if metric == "True":
+                # TODO
+                # If metric is true, var_binds just has one 
+                var_bind = var_binds[0]
+                result = self._translator.format_metric_data(var_bind)                
+            else:
+                result = self._translator.format_trap_event(var_binds)
+            return result
         
         return app
     
