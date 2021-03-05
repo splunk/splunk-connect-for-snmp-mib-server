@@ -292,3 +292,35 @@ class Translator:
         logger.debug(f"--- Trap Event String ---")
         logger.debug(trap_event_string)
         return trap_event_string
+    
+    # Format and translate the metric data
+    def format_metric_data(self, var_bind):
+        """
+        format one varBind object into metric format
+        @param var_bind: single varBind object
+        """
+        metric_data = {}
+   
+        # extract oid and value
+        oid = var_bind["oid"]
+        value = var_bind["val"]
+        # Extrat the types
+        nameType = var_bind["oid_type"]
+        valType = var_bind["val_type"]
+
+        # mib translation for oid (val keep same for original, mib translation, custom translation)
+        translated_mib_string = self.mib_translator(var_bind)
+        translated_oid = translated_mib_string.split("=")[0]
+        translated_val = translated_mib_string.split("=")[1]
+
+        # custom translation for oid
+        custom_translated_oid = self.custom_translator(oid)
+        
+        # Construct metric data
+        metric_data["metric_name"] = translated_oid
+        metric_data["_value"] = translated_val
+        metric_data["metric_type"] = valType
+        if custom_translated_oid:
+            metric_data["custom_metric_name"] = custom_translated_oid
+        logger.debug(f"metric_data: {json.dumps(metric_data)}")     
+        return json.dumps(metric_data)
