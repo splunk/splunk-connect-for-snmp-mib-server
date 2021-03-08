@@ -18,7 +18,7 @@ class MibServer:
     def build_flask_app(self):    
         app = Flask(__name__)
 
-        ppath = self._server_config["snmp"]["mibs"]["mibs_path"]
+        ppath = "http://" + os.environ['MONGO_SERVICE_SERVICE_HOST'] + ":" + os.environ['MONGO_SERVICE_PORT'] + "/files/asn1/@mib@"
 
         files_index = AutoIndex(app, ppath, add_url_rules=False)
 
