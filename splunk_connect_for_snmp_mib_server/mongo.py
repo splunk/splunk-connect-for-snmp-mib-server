@@ -9,7 +9,7 @@ class MibsRepository:
         """
         Create a collection in mongodb to store mib files
         """
-        self._client = MongoClient(os.environ['MONGO_SERVICE_SERVICE_HOST'], os.environ['MONGO_SERVICE_PORT'])
+        self._client = MongoClient(os.environ['MONGO_SERVICE_SERVICE_HOST'], int(os.environ['MONGO_SERVICE_PORT']))
         self._mibs = self._client[mongo_config['database']][mongo_config['collection']]
     
     
@@ -62,7 +62,7 @@ class MibsRepository:
 
 class OidsRepository:
     def __init__(self, mongo_config):
-        self._client = MongoClient(os.environ['MONGO_SERVICE_SERVICE_HOST'], os.environ['MONGO_SERVICE_PORT'])
+        self._client = MongoClient(os.environ['MONGO_SERVICE_SERVICE_HOST'], int(os.environ['MONGO_SERVICE_PORT']))
         self._oids = self._client[mongo_config['database']][mongo_config['collection']]
 
     def contains_oid(self, oid):
