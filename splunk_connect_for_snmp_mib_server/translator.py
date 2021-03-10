@@ -39,7 +39,7 @@ class Translator:
         snmp_config = self._server_config["snmp"]
         mibBuilder = builder.MibBuilder()
         mibViewController = view.MibViewController(mibBuilder)
-        compiler.addMibCompiler(mibBuilder, sources=snmp_config["mibs"]["url"])
+        compiler.addMibCompiler(mibBuilder, sources=[os.environ['MIBS_FILES_URL']])
 
         # Optionally set an alternative path to compiled MIBs
         logger.debug('Setting MIB sources...')

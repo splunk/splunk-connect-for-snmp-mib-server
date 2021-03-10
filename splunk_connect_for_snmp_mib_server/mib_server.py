@@ -17,7 +17,8 @@ class MibServer:
     
     def build_flask_app(self):    
         app = Flask(__name__)
-        ppath = os.environ['MIBS_SERVER_URL']
+        # ppath = os.environ['MIBS_SERVER_URL']
+        ppath = self._server_config["snmp"]["mibs"]["mibs_path"]
         files_index = AutoIndex(app, ppath, add_url_rules=False)
 
         @app.route('/')
