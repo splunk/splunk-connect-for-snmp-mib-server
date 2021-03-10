@@ -253,16 +253,18 @@ class Translator:
 
             # Construct trap string
             offset += 1
-            original_oid = "{oid}={value}".format(offset=offset, oid=oid, value=value)
-            oid_type_string = "oid-type{offset}={oid_type}".format(
+            original_oid = '{oid}="{value}"'.format(offset=offset, oid=oid, value=value)
+            oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=nameType
             )
             # translated_mib_string = self.mib_translator(name, val)
             translated_mib_string = self.mib_translator(var_bind)
+            if translated_mib_string:
+                translated_mib_string = '{translated_oid}="{translated_value}"'.format(translated_oid=translated_mib_string.split("=")[0], translated_value=translated_mib_string.split("=")[1])
 
             if custom_translated_oid:
                 custom_translated_mib_string = (
-                    "{custom_translated_oid}={custom_translated_value}".format(
+                    '{custom_translated_oid}="{custom_translated_value}"'.format(
                         offset=offset,
                         custom_translated_oid=custom_translated_oid,
                         custom_translated_value=custom_translated_value,
@@ -271,8 +273,8 @@ class Translator:
             else:
                 custom_translated_mib_string = ""
 
-            original_value = "value{offset}={value}".format(offset=offset, value=value)
-            val_type_string = "value{offset}-type={val_type}".format(
+            original_value = 'value{offset}="{value}"'.format(offset=offset, value=value)
+            val_type_string = 'value{offset}-type="{val_type}"'.format(
                 offset=offset, val_type=valType
             )
             trap_event_string += " ".join(
@@ -322,5 +324,5 @@ class Translator:
         metric_data["metric_type"] = valType
         if custom_translated_oid:
             metric_data["custom_metric_name"] = custom_translated_oid
-        logger.debug(f"metric_data: {json.dumps(metric_data)}")     
+        logger.debug(f"metric_data: {json.dumps(metric_data)}")
         return json.dumps(metric_data)

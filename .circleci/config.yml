@@ -42,14 +42,14 @@ jobs:
 
   release:
     docker:
-      - image: circleci/node:11
+      - image: circleci/node:12
     steps:
       - checkout
       - run: npx semantic-release
 
   publish:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8.6
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -72,6 +72,10 @@ jobs:
             VERSION_DOCKER_MMP=$(echo  $VERSION | sed -n 's/v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
             VERSION_DOCKER_MM=$(echo  $VERSION | sed -n 's/v\([0-9]*\.[0-9]*\).*/\1/p')
             VERSION_DOCKER_M=$(echo  $VERSION | sed -n 's/v\([0-9]*\).*/\1/p')
+            
+            curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+            source $HOME/.poetry/env
+            poetry build
 
             docker build -f Dockerfile . -t release
 
