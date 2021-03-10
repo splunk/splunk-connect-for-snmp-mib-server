@@ -325,4 +325,5 @@ class Translator:
         if custom_translated_oid:
             metric_data["custom_metric_name"] = custom_translated_oid
         logger.debug(f"metric_data: {json.dumps(metric_data)}")     
+        
         return json.dumps(metric_data)
