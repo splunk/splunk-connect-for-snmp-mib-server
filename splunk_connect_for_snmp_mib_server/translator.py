@@ -261,7 +261,9 @@ class Translator:
             translated_mib_string = self.mib_translator(var_bind)
             if translated_mib_string:
                 translated_mib_string = '{translated_oid}="{translated_value}"'.format(translated_oid=translated_mib_string.split("=")[0], translated_value=translated_mib_string.split("=")[1])
-
+            else:
+                translated_mib_string = ""
+                
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
@@ -312,8 +314,12 @@ class Translator:
 
         # mib translation for oid (val keep same for original, mib translation, custom translation)
         translated_mib_string = self.mib_translator(var_bind)
-        translated_oid = translated_mib_string.split("=")[0]
-        translated_val = translated_mib_string.split("=")[1]
+        if translated_mib_string:
+            translated_oid = translated_mib_string.split("=")[0]
+            translated_val = translated_mib_string.split("=")[1]
+        else:
+            translated_oid = oid
+            translated_val = value
 
         # custom translation for oid
         custom_translated_oid = self.custom_translator(oid)
