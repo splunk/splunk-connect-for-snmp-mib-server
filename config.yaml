@@ -1,12 +1,8 @@
 snmp:
   mibs:
-    url:
-      - "file:///usr/share/snmp/mibs"
     dir: "/work/mibs/pysnmp"
-    # dir: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs/pysnmp"
     load_list: "lookups/mibs_list.csv"
     mibs_path: "/work/mibs"
-    # mibs_path: "/Users/yling/snmp-project/splunk-connect-for-snmp-mib-server/mibs"
 mongo:
   oid:
     database: "snmp_traps"
