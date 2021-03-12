@@ -35,3 +35,32 @@ We welcome feedback and contributions from the community! Please see our [contri
 * NGNIX [BSD-2-Clause](https://hub.docker.com/_/nginx/)
 
 
+
+## Development Instructions for Mib Server
+
+> This is used as a reference steps while working on development aspects of SNMP Mib Server component of Splunk Connect for SNMP!
+
+#### Get Started
+```
+git clone git@github.com:splunk/splunk-connect-for-snmp-mib-server.git
+cd "splunk-connect-for-snmp-mib-server"
+```
+
+#### Run MongoDB
+
+```docker run -d -p 27017:27017 -v ./data:/data/db mongo```
+
+#### Setup Environment for Mib Server
+```
+export MONGO_SERVICE_SERVICE_HOST=<mongo_host>
+export MONGO_SERVICE_SERVICE_PORT=<mongo_port>
+export MIBS_FILES_URL=http://0.0.0.0:5000/files/asn1/@mib@
+```
+#### Install Poetry
+```pip3 install poetry```
+
+#### Run Mib Server
+```
+poetry install
+poetry run sc4snmp-mib-server
+```
