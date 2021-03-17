@@ -5,7 +5,7 @@ snmp:
     mibs_path: "/work/mibs"
 mongo:
   oid:
-    database: "snmp_traps"
+    database: "mib_server"
     collection: "oids"
   mib:
     database: "files"
