@@ -18,9 +18,7 @@ class Translator:
         self._server_config = server_config
         self._custom_translation_table = self.get_custom_translation_table()
         self._load_list = server_config["snmp"]["mibs"]["load_list"]
-        self._mib_builder, self._mib_view_controller = self.build_mib_compiler(
-            self._load_list
-        )
+        self._mib_builder, self._mib_view_controller = self.build_mib_compiler()
 
         self._mongo_oids_coll = self.build_oids_collection(
             server_config["mongo"]["oid"]
@@ -36,12 +34,12 @@ class Translator:
         oids_collection = OidsRepository(oid_mongo_config)
         return oids_collection
 
-    # build a mibs collectoin in mongo
+    # build a mibs collection in mongo
     def build_mibs_collection(self, mib_mongo_config):
         mibs_collection = MibsRepository(mib_mongo_config)
         return mibs_collection
 
-    def build_mib_compiler(self, load_list):
+    def build_mib_compiler(self):
         # Assemble MIB browser
         snmp_config = self._server_config["snmp"]
         mibBuilder = builder.MibBuilder()
