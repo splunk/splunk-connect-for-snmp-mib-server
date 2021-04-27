@@ -1,7 +1,6 @@
 import argparse
-import os
 import yaml
-from splunk_connect_for_snmp_mib_server.mongo import MibsRepository, OidsRepository
+from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
 from splunk_connect_for_snmp_mib_server.mib_server import MibServer
 import logging
 
