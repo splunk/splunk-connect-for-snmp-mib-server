@@ -350,7 +350,10 @@ class Translator:
         custom_translated_oid = self.custom_translator(oid)
 
         # Construct metric data
-        metric_data["metric_name"] = translated_oid
+        # .. Prefix the metric_name for UX in analytics workspace
+        # .. Splunk uses . rather than :: for hierarchy.
+        # .. if the metric name contains a . replace with _
+        metric_data["metric_name"] = f'sc4snmp.{translated_oid.replace(".","_").replace("::", ".")}'
         metric_data["_value"] = translated_val
         metric_data["metric_type"] = valType
         if custom_translated_oid:
