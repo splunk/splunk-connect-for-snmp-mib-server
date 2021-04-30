@@ -77,8 +77,7 @@ class OidsRepository:
         if os.environ.get("MONGO_USER"):
             self._client.admin.authenticate(
                 os.environ["MONGO_USER"],
-                os.environ["MONGO_PASS"],
-                mechanism="SCRAM-SHA-1",
+                os.environ["MONGO_PASS"]
             )
         self._oids = self._client[mongo_config["database"]][mongo_config["collection"]]
 
