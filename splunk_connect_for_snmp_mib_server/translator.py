@@ -351,9 +351,9 @@ class Translator:
 
         # Construct metric data
         snmp_index = translated_oid.split(".")[-1]
-        if snmp_index.isnumeric():
-            metric_data["snmp_index"] = snmp_index
-            translated_oid = translated_oid[: -len(f".{snmp_index}")]
+        # if snmp_index.isnumeric():
+        #     metric_data["snmp_index"] = snmp_index
+        #     translated_oid = translated_oid[: -len(f".{snmp_index}")]
         metric_data[
             "metric_name"
         ] = f'sc4snmp.{translated_oid.replace(".","_").replace("::", ".")}'
