@@ -15,6 +15,7 @@ Flask = "^1.1.2"
 Flask-AutoIndex = "^0.6.6"
 
 [tool.poetry.dev-dependencies]
+mongomock = "^3.22.1"
 
 [tool.poetry.scripts]
 sc4snmp-mib-server = "splunk_connect_for_snmp_mib_server.snmp_mib_server:main"

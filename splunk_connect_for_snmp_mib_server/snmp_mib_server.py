@@ -35,25 +35,19 @@ def main():
         "--hec_threads", default=10, help="Max http worker thread count", type=int
     )
     parser.add_argument("-c", "--config", default="config.yaml", help="Config File")
-
     args = parser.parse_args()
-
     log_level = args.loglevel.upper()
     config_file = args.config
 
     logging.getLogger().setLevel(log_level)
     logger.info(f"Log Level is {log_level}")
     logger.info(f"Config file is {config_file}")
-
     logger.info("Completed Argument parsing")
 
     with open(config_file, "r") as yamlfile:
         server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-    # Upload mib fiels into mongo
     upload_mibs(server_config)
-
-    # Init MibServer
     mib_server = MibServer(args, server_config)
     mib_server.run_mib_server()
 
