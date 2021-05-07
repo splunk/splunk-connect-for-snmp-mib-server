@@ -262,6 +262,14 @@ class Translator:
         offset = 0
 
         for var_bind in var_binds:
+            if not all(
+                key in var_bind for key in ["oid", "oid_type", "val", "val_type"]
+            ):
+                logger.error(
+                    f"Error in the following var_bind: {var_bind} (missing keys)"
+                )
+                continue
+
             oid = var_bind["oid"]
             value = var_bind["val"]
             name_type = var_bind["oid_type"]

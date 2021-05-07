@@ -89,3 +89,41 @@ class TranslatorTest(TestCase):
                 untranslated += "\n"
 
         assert untranslated == translated_var_binds
+
+    @mongomock.patch()
+    def test_format_trap_invalid_input(self):
+        input_var_binds_invalids = [
+            {
+                # MISSING OID
+                # "oid": "1.3.6.1.2.1.1.3.0",
+                "oid_type": "ObjectName",
+                "val": "123",
+                "val_type": "TimeTicks",
+            },
+            {
+                "oid": "1.3.6.1.2.1.1.3.0",
+                # MISSING OID_TYPE
+                # "oid_type": "ObjectName",
+                "val": "123",
+                "val_type": "TimeTicks",
+            },
+            {
+                "oid": "1.3.6.1.2.1.1.3.0",
+                "oid_type": "ObjectName",
+                # MISSING VAL
+                # "val": "123",
+                "val_type": "TimeTicks",
+            },
+            {
+                "oid": "1.3.6.1.2.1.1.3.0",
+                "oid_type": "ObjectName",
+                "val": "123",
+                # MISSING VAL_TYPE
+                # "val_type": "TimeTicks",
+            },
+        ]
+
+        translated_var_binds = self.my_translator.format_trap_event(
+            input_var_binds_invalids
+        )
+        assert len(translated_var_binds) == 0
