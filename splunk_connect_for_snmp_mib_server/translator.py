@@ -185,13 +185,26 @@ class Translator:
 
         return no_mapping_mib
 
+    def fix_hex_string_for_walk(self, value, value_type):
+        # We noticed this weird behavior: when running a full walk for a sub-tree, Hex-STRING values
+        # are not an OctetString. Only for Hex-STRING types we perform a manual conversion for this
+        # edge case:
+        #
+        # lstoppa@C02DL3AAMD6R ~ % snmpget -v 1 -c public localhost:1611 1.3.6.1.2.1.4.22.1.2.2.195.218.254.97
+        # IP-MIB::ipNetToMediaPhysAddress.2.195.218.254.97 = STRING: 0:e:84:9f:9c:19
+        # lstoppa@C02DL3AAMD6R ~ % snmpwalk -v 1 -c public localhost:1611 1.3.6.1.2.1.4.22.1.2.2.195.218.254.97
+        # IP-MIB::ipNetToMediaPhysAddress.2.195.218.254.97 = STRING: 0:e:84:9f:9c:19
+        # lstoppa@C02DL3AAMD6R ~ % snmpwalk -v 1 -c public localhost:1611 1.3.6.1.2.1 | grep Hex
+        # SNMPv2-SMI::mib-2.3.1.1.2.2.1.195.218.254.97 = Hex-STRING: 00 0E 84 9F 9C 19
+        return value.replace(" ", ":") if value_type == "Hex-STRING" else value
+
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
 
         # Run var-binds through MIB resolver
         try:
             name = var_bind["oid"]
-            val = var_bind["val"]
+            val = self.fix_hex_string_for_walk(var_bind["val"], var_bind["val_type"])
             translated_var_bind = rfc1902.ObjectType(
                 rfc1902.ObjectIdentity(name), val
             ).resolveWithMib(self._mib_view_controller)

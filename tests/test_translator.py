@@ -161,52 +161,26 @@ class TranslatorTest(TestCase):
         assert translated_dict["metric_name"] == f"sc4snmp.{untranslated_oid}"
 
     @mongomock.patch()
-    def test_format_weird_metric(self):
-        input_var_binds = {
+    def test_format_hex_string_from_walk_for_root_tree(self):
+        input_var_binds_colons = {
+            "oid": "1.3.6.1.2.1.4.22.1.2.2.195.218.254.97",
+            "val": "00:0E:84:9F:9C:19",
+            "val_type": "Hex-STRING",
+        }
+        input_var_binds_spaces = {
             "oid": "1.3.6.1.2.1.4.22.1.2.2.195.218.254.97",
             "val": "00 0E 84 9F 9C 19",
             "val_type": "Hex-STRING",
         }
-        """"
-        MIB
-        object
-        'IP-MIB::ipNetToMediaPhysAddress.2.195.218.254.97'
-        having
-        type
-        'PhysAddress'
-        failed
-        to
-        cast
-        value
-        '00 0E 84 9F 9C 19': Display
-        format
-        eval
-        failure: b'00 0E 84 9F 9C 19': invalid
-        literal
-        for int() with base 16: '00 0E 84 9F 9C 19'
-        caused
-        by <
 
-        class 'ValueError'>: invalid
-
-        literal
-        for int() with base 16: '00 0E 84 9F 9C 19'
-        caused
-        by <
-
-        class 'pysnmp.smi.error.SmiError'>: Display
-
-        format
-        eval
-        failure: b'00 0E 84 9F 9C 19': invalid
-        literal
-        for int() with base 16: '00 0E 84 9F 9C 19'
-        caused
-        by <
-
-        class 'ValueError'>: invalid
-
-        literal
-        for int() with base 16: '00 0E 84 9F 9C 19'
-        """
-        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
+        translated_metrics_colons = self.my_translator.format_metric_data(
+            input_var_binds_colons
+        )
+        translated_metrics_spaces = self.my_translator.format_metric_data(
+            input_var_binds_spaces
+        )
+        assert translated_metrics_colons == translated_metrics_spaces
+        translated_dict = json.loads(translated_metrics_colons)
+        assert translated_dict["metric_name"].startswith(
+            "sc4snmp.IP-MIB.ipNetToMediaPhysAddress"
+        )
