@@ -6,6 +6,7 @@ import yaml
 from splunk_connect_for_snmp_mib_server.translator import Translator
 import os
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -127,3 +128,34 @@ class TranslatorTest(TestCase):
             input_var_binds_invalids
         )
         assert len(translated_var_binds) == 0
+
+    @mongomock.patch()
+    def test_format_metric(self):
+        input_var_binds = {
+            "oid": "1.3.6.1.2.1.1.3.0",
+            "val": "123",
+            "val_type": "TimeTicks",
+        }
+        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
+        translated_dict = json.loads(translated_metrics)
+        for required_key in ["metric_name", "_value", "metric_type"]:
+            assert required_key in translated_dict
+        assert translated_dict["metric_name"] == "sc4snmp.SNMPv2-MIB.sysUpTime_0"
+        assert translated_dict["_value"] == input_var_binds["val"]
+        assert translated_dict["metric_type"] == input_var_binds["val_type"]
+
+    @mongomock.patch()
+    def test_format_non_existing_metric(self):
+        input_var_binds = {
+            "oid": "1.3.6666.16666.26666.16666.1.3.0",
+            "val": "123",
+            "val_type": "TimeTicks",
+        }
+        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
+        translated_dict = json.loads(translated_metrics)
+        for required_key in ["metric_name", "_value", "metric_type"]:
+            assert required_key in translated_dict
+        assert translated_dict["_value"] == input_var_binds["val"]
+        assert translated_dict["metric_type"] == input_var_binds["val_type"]
+        untranslated_oid = input_var_binds["oid"].replace(".", "_")
+        assert translated_dict["metric_name"] == f"sc4snmp.{untranslated_oid}"
