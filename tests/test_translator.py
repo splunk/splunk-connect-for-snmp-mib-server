@@ -159,3 +159,54 @@ class TranslatorTest(TestCase):
         assert translated_dict["metric_type"] == input_var_binds["val_type"]
         untranslated_oid = input_var_binds["oid"].replace(".", "_")
         assert translated_dict["metric_name"] == f"sc4snmp.{untranslated_oid}"
+
+    @mongomock.patch()
+    def test_format_weird_metric(self):
+        input_var_binds = {
+            "oid": "1.3.6.1.2.1.4.22.1.2.2.195.218.254.97",
+            "val": "00 0E 84 9F 9C 19",
+            "val_type": "Hex-STRING",
+        }
+        """"
+        MIB
+        object
+        'IP-MIB::ipNetToMediaPhysAddress.2.195.218.254.97'
+        having
+        type
+        'PhysAddress'
+        failed
+        to
+        cast
+        value
+        '00 0E 84 9F 9C 19': Display
+        format
+        eval
+        failure: b'00 0E 84 9F 9C 19': invalid
+        literal
+        for int() with base 16: '00 0E 84 9F 9C 19'
+        caused
+        by <
+
+        class 'ValueError'>: invalid
+
+        literal
+        for int() with base 16: '00 0E 84 9F 9C 19'
+        caused
+        by <
+
+        class 'pysnmp.smi.error.SmiError'>: Display
+
+        format
+        eval
+        failure: b'00 0E 84 9F 9C 19': invalid
+        literal
+        for int() with base 16: '00 0E 84 9F 9C 19'
+        caused
+        by <
+
+        class 'ValueError'>: invalid
+
+        literal
+        for int() with base 16: '00 0E 84 9F 9C 19'
+        """
+        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
