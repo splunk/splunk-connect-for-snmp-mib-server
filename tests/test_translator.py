@@ -7,8 +7,44 @@ from splunk_connect_for_snmp_mib_server.translator import Translator
 import os
 import logging
 import json
+from pysnmp.hlapi import *
 
 logger = logging.getLogger(__name__)
+
+
+# This sample function was used to generate test data.
+# I took the content of https://raw.githubusercontent.com/etingof/snmpsim/master/data/recorded/linux-full-walk.snmprec
+# and sorted by data type. This should give us some real data we can use to test our MIB-server translation
+# process. This was the input data we use in our test "test_translate_all_snmp_simulator_data_types"
+def prepare_test_data():
+    for oid in (
+        "1.3.6.1.2.1.2.2.1.4.1",
+        "1.3.6.1.2.1.1.6.0",
+        "1.3.6.1.2.1.2.2.1.6.2",
+        "1.3.6.1.2.1.1.9.1.2.7",
+        "1.3.6.1.2.1.6.13.1.4.195.218.254.105.51684.194.67.10.226.22",
+        "1.3.6.1.2.1.25.3.2.1.6.1025",
+        "1.3.6.1.2.1.31.1.1.1.15.2",
+        "1.3.6.1.2.1.1.3.0",
+        "1.3.6.1.4.1.2021.10.1.6.1",
+        "1.3.6.1.2.1.31.1.1.1.10.1",
+    ):
+        g = getCmd(
+            SnmpEngine(),
+            CommunityData("public"),
+            UdpTransportTarget(("localhost", 1611)),
+            ContextData(),
+            ObjectType(ObjectIdentity(oid)),
+        )
+        error_indication, error_status, error_index, var_binds = next(g)
+        for name, value in var_binds:
+            class_name = value.__class__.__name__
+            # normal_value = value
+            str_value = str(value).replace("\n", "")
+            pretty_value = value.prettyPrint()
+            print(
+                f"{str(name)}|{class_name}|{str_value}|{pretty_value}|{pretty_value == str_value}"
+            )
 
 
 class TranslatorTest(TestCase):
@@ -83,7 +119,7 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i+1}="{oid_type}" value{i+1}-type="{value_type}" {oid}="{value}" value{i+1}="{value}"'
+            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
@@ -161,26 +197,69 @@ class TranslatorTest(TestCase):
         assert translated_dict["metric_name"] == f"sc4snmp.{untranslated_oid}"
 
     @mongomock.patch()
-    def test_format_hex_string_from_walk_for_root_tree(self):
-        input_var_binds_colons = {
-            "oid": "1.3.6.1.2.1.4.22.1.2.2.195.218.254.97",
-            "val": "00:0E:84:9F:9C:19",
-            "val_type": "Hex-STRING",
-        }
-        input_var_binds_spaces = {
-            "oid": "1.3.6.1.2.1.4.22.1.2.2.195.218.254.97",
-            "val": "00 0E 84 9F 9C 19",
-            "val_type": "Hex-STRING",
-        }
+    def test_translate_all_snmp_simulator_data_types(self):
+        oids = (
+            "1.3.6.1.2.1.2.2.1.4.1",
+            "1.3.6.1.2.1.1.6.0",
+            "1.3.6.1.2.1.2.2.1.6.2",
+            "1.3.6.1.2.1.1.9.1.2.7",
+            "1.3.6.1.2.1.6.13.1.4.195.218.254.105.51684.194.67.10.226.22",
+            "1.3.6.1.2.1.25.3.2.1.6.1025",
+            "1.3.6.1.2.1.31.1.1.1.15.2",
+            "1.3.6.1.2.1.1.3.0",
+            "1.3.6.1.4.1.2021.10.1.6.1",
+            "1.3.6.1.2.1.31.1.1.1.10.1",
+        )
+        str_values = (
+            "16436",
+            "San Francisco, California, United States",
+            "0x00127962f940",
+            "1.3.6.1.2.1.50",
+            "194.67.10.226",
+            "0",
+            "100",
+            "147870473",
+            "0x9f78043eeb851f",
+            "381059068",
+        )
+        value_types = (
+            "Integer",
+            "DisplayString",
+            "OctetString",
+            "ObjectIdentity",
+            "IpAddress",
+            "Counter32",
+            "Gauge32",
+            "TimeTicks",
+            "Opaque",
+            "Counter64",
+        )
 
-        translated_metrics_colons = self.my_translator.format_metric_data(
-            input_var_binds_colons
+        expected_translations = (
+            "sc4snmp.IF-MIB.ifMtu_1",
+            "sc4snmp.SNMPv2-MIB.sysLocation_0",
+            "sc4snmp.IF-MIB.ifPhysAddress_2",
+            "sc4snmp.SNMPv2-MIB.sysORID_7",
+            "sc4snmp.TCP-MIB.tcpConnRemAddress_195_218_254_105_51684_194_67_10_226_22",
+            "sc4snmp.1_3_6_1_2_1_25_3_2_1_6_1025",
+            "sc4snmp.IF-MIB.ifHighSpeed_2",
+            "sc4snmp.SNMPv2-MIB.sysUpTime_0",
+            "sc4snmp.1_3_6_1_4_1_2021_10_1_6_1",
+            "sc4snmp.IF-MIB.ifHCOutOctets_1",
         )
-        translated_metrics_spaces = self.my_translator.format_metric_data(
-            input_var_binds_spaces
+        assert (
+            len(oids) == len(str_values)
+            and len(str_values) == len(value_types)
+            and len(value_types) == len(expected_translations)
         )
-        assert translated_metrics_colons == translated_metrics_spaces
-        translated_dict = json.loads(translated_metrics_colons)
-        assert translated_dict["metric_name"].startswith(
-            "sc4snmp.IP-MIB.ipNetToMediaPhysAddress"
-        )
+        for index in range(0, len(oids)):
+            input_var_binds_colons = {
+                "oid": oids[index],
+                "val": str_values[index],
+                "val_type": value_types[index],
+            }
+            translated_metrics = self.my_translator.format_metric_data(
+                input_var_binds_colons
+            )
+            json_metrics = json.loads(translated_metrics)
+            assert json_metrics["metric_name"] == expected_translations[index]
