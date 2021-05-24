@@ -11,6 +11,12 @@ class MibsRepository:
             os.environ["MONGO_SERVICE_SERVICE_HOST"],
             int(os.environ["MONGO_SERVICE_SERVICE_PORT"]),
         )
+        if os.environ.get("MONGO_USER"):
+            self._client.admin.authenticate(
+                os.environ["MONGO_USER"],
+                os.environ["MONGO_PASS"],
+                mechanism="SCRAM-SHA-1",
+            )
         self._mibs = self._client[mongo_config["database"]][mongo_config["collection"]]
 
     def upload_files(self, mib_files_dir):
@@ -46,6 +52,12 @@ class OidsRepository:
             os.environ["MONGO_SERVICE_SERVICE_HOST"],
             int(os.environ["MONGO_SERVICE_SERVICE_PORT"]),
         )
+        if os.environ.get("MONGO_USER"):
+            self._client.admin.authenticate(
+                os.environ["MONGO_USER"],
+                os.environ["MONGO_PASS"],
+                mechanism="SCRAM-SHA-1",
+            )
         self._oids = self._client[mongo_config["database"]][mongo_config["collection"]]
 
     def contains_oid(self, oid):

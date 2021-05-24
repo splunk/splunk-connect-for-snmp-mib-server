@@ -185,7 +185,6 @@ class Translator:
 
         return no_mapping_mib
 
-
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
         # Run var-binds through MIB resolver
