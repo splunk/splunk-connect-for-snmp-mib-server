@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_autoindex import AutoIndex
 from splunk_connect_for_snmp_mib_server.translator import Translator
 import logging
+from waitress import serve
 
 logger = logging.getLogger(__name__)
 
@@ -50,4 +51,4 @@ class MibServer:
 
     def run_mib_server(self):
         # poetry run fails when debug=True
-        self._flask_app.run(host="0.0.0.0", port=self._args.port)
+        serve(self._flask_app, host="0.0.0.0", port=self._args.port)
