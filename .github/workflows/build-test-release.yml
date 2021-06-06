@@ -110,7 +110,7 @@ jobs:
       - name: Trufflehog Actions Scan
         uses: edplato/trufflehog-actions-scan@v0.9f-beta
         with:
-          scanArguments: "-x mibs"
+          scanArguments: "-x .github/workflows/exclude-patterns.txt"
 
   semgrep:
     runs-on: ubuntu-latest
