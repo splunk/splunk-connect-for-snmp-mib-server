@@ -173,7 +173,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/splunk/splunk-connect-for-snmp-poller
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern=v{{major}}.{{minor}}
             type=semver,pattern=v{{major}}
