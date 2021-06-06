@@ -13,15 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-snmp:
-  mibs:
-    dir: "/work/mibs/pysnmp"
-    load_list: "lookups/mibs_list.csv"
-    mibs_path: "/work/mibs"
-mongo:
-  oid:
-    database: "mib_server"
-    collection: "oids"
-  mib:
-    database: "files"
-    collection: "mib_files"
+{
+  "branches":
+    [
+      "+([0-9])?(.{+([0-9]),x}).x",
+      "main",
+      "next",
+      "next-major",
+      { name: "develop", prerelease: true },
+    ],
+  plugins:
+    [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/git",
+        {
+          "assets": ["NOTICE"],
+          "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}",
+        },
+      ],
+      ["@semantic-release/github", { "assets": ["NOTICE"] }],
+    ],
+}

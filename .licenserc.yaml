@@ -13,15 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-snmp:
-  mibs:
-    dir: "/work/mibs/pysnmp"
-    load_list: "lookups/mibs_list.csv"
-    mibs_path: "/work/mibs"
-mongo:
-  oid:
-    database: "mib_server"
-    collection: "oids"
-  mib:
-    database: "files"
-    collection: "mib_files"
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Splunk Inc.
+
+  paths-ignore:
+    - ".circleci/"
+    - ".github/"
+    - ".vscode/"
+    - "dist"
+    - "licenses"
+    - "**/*.md"
+    - "LICENSE"
+    - "NOTICE"
+    - "*.lock"
+    - "mibs"
+    - "**/*.csv"
+
+  comment: on-failure
