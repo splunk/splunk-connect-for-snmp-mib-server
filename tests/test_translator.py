@@ -78,9 +78,15 @@ class TranslatorTest(TestCase):
 
     @mongomock.patch()
     def setUp(self):
-        with open("./config.yaml", "r") as yamlfile:
+        import os
+
+        base_project_path = os.path.join(os.getcwd(), "..")
+        config_file = os.path.join(base_project_path, "config.yaml")
+        with open(config_file, "r") as yamlfile:
             server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
-        server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
+        server_config["snmp"]["mibs"]["dir"] = os.path.join(
+            base_project_path, "mibs", "pysnmp"
+        )
         self.my_translator = Translator(server_config)
 
     @mongomock.patch()
