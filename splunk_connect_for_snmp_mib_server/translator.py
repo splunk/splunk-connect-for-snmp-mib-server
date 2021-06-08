@@ -297,7 +297,7 @@ class Translator:
                 custom_translated_value = self.custom_translator(value)
 
             offset += 1
-            original_oid = '{oid}="{value}"'.format(offset=offset, oid=oid, value=value)
+            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
@@ -313,7 +313,6 @@ class Translator:
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
-                        offset=offset,
                         custom_translated_oid=custom_translated_oid,
                         custom_translated_value=custom_translated_value,
                     )
