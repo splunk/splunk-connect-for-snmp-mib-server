@@ -80,7 +80,7 @@ class TranslatorTest(TestCase):
     def setUp(self):
         import os
 
-        base_project_path = os.path.join(os.getcwd(), "..")
+        base_project_path = os.getcwd()
         config_file = os.path.join(base_project_path, "config.yaml")
         with open(config_file, "r") as yamlfile:
             server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
