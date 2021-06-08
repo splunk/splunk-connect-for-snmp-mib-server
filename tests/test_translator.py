@@ -20,15 +20,8 @@ from unittest import TestCase, mock
 
 import mongomock
 import yaml
-from pysnmp.hlapi import (
-    CommunityData,
-    ContextData,
-    ObjectIdentity,
-    ObjectType,
-    SnmpEngine,
-    UdpTransportTarget,
-    getCmd,
-)
+from pysnmp.hlapi import (CommunityData, ContextData, ObjectIdentity,
+                          ObjectType, SnmpEngine, UdpTransportTarget, getCmd)
 
 from splunk_connect_for_snmp_mib_server.translator import Translator
 
@@ -147,7 +140,11 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
+            current = (
+                f'oid-type{i + 1}="{oid_type}" '
+                f'value{i + 1}-type="{value_type}" '
+                f'{oid}="{value}" value{i + 1}="{value}"'
+            )
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
