@@ -20,8 +20,15 @@ from unittest import TestCase, mock
 
 import mongomock
 import yaml
-from pysnmp.hlapi import (CommunityData, ContextData, ObjectIdentity,
-                          ObjectType, SnmpEngine, UdpTransportTarget, getCmd)
+from pysnmp.hlapi import (
+    CommunityData,
+    ContextData,
+    ObjectIdentity,
+    ObjectType,
+    SnmpEngine,
+    UdpTransportTarget,
+    getCmd,
+)
 
 from splunk_connect_for_snmp_mib_server.translator import Translator
 
