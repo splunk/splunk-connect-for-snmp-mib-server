@@ -13,24 +13,34 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import json
+import logging
+import os
 from unittest import TestCase, mock
 
 import mongomock
 import yaml
+from pysnmp.hlapi import (
+    CommunityData,
+    ContextData,
+    ObjectIdentity,
+    ObjectType,
+    SnmpEngine,
+    UdpTransportTarget,
+    getCmd,
+)
 
 from splunk_connect_for_snmp_mib_server.translator import Translator
-import os
-import logging
-import json
-from pysnmp.hlapi import *
 
 logger = logging.getLogger(__name__)
 
 
-# This sample function was used to generate test data.
-# I took the content of https://raw.githubusercontent.com/etingof/snmpsim/master/data/recorded/linux-full-walk.snmprec
-# and sorted by data type. This should give us some real data we can use to test our MIB-server translation
-# process. This was the input data we use in our test "test_translate_all_snmp_simulator_data_types"
+# This sample function was used to generate test data. I took the content of
+# https://raw.githubusercontent.com/etingof/snmpsim/master/data/recorded/linux
+#                                                           -full-walk.snmprec
+# and sorted by data type. This should give us some real data we can use to
+# test our MIB-server translation process. This was the input data we use in
+# our test "test_translate_all_snmp_simulator_data_types"
 def prepare_test_data():
     for oid in (
         "1.3.6.1.2.1.2.2.1.4.1",
@@ -44,22 +54,21 @@ def prepare_test_data():
         "1.3.6.1.4.1.2021.10.1.6.1",
         "1.3.6.1.2.1.31.1.1.1.10.1",
     ):
-        g = getCmd(
+        result = getCmd(
             SnmpEngine(),
             CommunityData("public"),
             UdpTransportTarget(("localhost", 1611)),
             ContextData(),
             ObjectType(ObjectIdentity(oid)),
         )
-        error_indication, error_status, error_index, var_binds = next(g)
+        error_indication, error_status, error_index, var_binds = next(result)
         for name, value in var_binds:
             class_name = value.__class__.__name__
             # normal_value = value
             str_value = str(value).replace("\n", "")
             pretty_value = value.prettyPrint()
-            print(
-                f"{str(name)}|{class_name}|{str_value}|{pretty_value}|{pretty_value == str_value}"
-            )
+            same = pretty_value == str_value
+            print(f"{str(name)}|{class_name}|{str_value}|{pretty_value}|{same}")
 
 
 class TranslatorTest(TestCase):
@@ -78,9 +87,13 @@ class TranslatorTest(TestCase):
 
     @mongomock.patch()
     def setUp(self):
-        with open("./config.yaml", "r") as yamlfile:
+        base_project_path = os.getcwd()
+        config_file = os.path.join(base_project_path, "config.yaml")
+        with open(config_file, "r") as yamlfile:
             server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
-        server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
+        server_config["snmp"]["mibs"]["dir"] = os.path.join(
+            base_project_path, "mibs", "pysnmp"
+        )
         self.my_translator = Translator(server_config)
 
     @mongomock.patch()
@@ -134,7 +147,11 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
+            current = (
+                f'oid-type{i + 1}="{oid_type}" '
+                f'value{i + 1}-type="{value_type}" '
+                f'{oid}="{value}" value{i + 1}="{value}"'
+            )
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
