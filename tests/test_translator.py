@@ -78,9 +78,20 @@ class TranslatorTest(TestCase):
 
     @mongomock.patch()
     def setUp(self):
-        with open("./config.yaml", "r") as yamlfile:
-            server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
-        server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
+        server_config = {
+            "snmp": {
+                "mibs": {
+                    "dir": "mibs/pysnmp",
+                    "load_list": "lookups/mibs_list.csv",
+                    "mibs_path": "mibs",
+                }
+            },
+            "mongo": {
+                "oid": {"database": "mib_server", "collection": "oids"},
+                "mib": {"database": "files", "collection": "mib_files"},
+            },
+        }
+        #server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
         self.my_translator = Translator(server_config)
 
     @mongomock.patch()
