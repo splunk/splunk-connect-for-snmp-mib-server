@@ -1,0 +1,15 @@
+We want to document here how to add a new MIB file to our server.
+
+1. create a new empty folder (like mkdir -p "$HOME/add_new_mib" && cd "$HOME/add_new_mib")
+2. curl https://raw.githubusercontent.com/etingof/pysmi/master/scripts/mibdump.py -o mibdump.py && chmod a+x mibdump.py
+3. run mibdump.py --mib-source file:///usr/share/snmp/mibs \
+                  --mib-source http://mibs.thola.io/asn1/@mib@ \
+                  --mib-source . --destination-format pysnmp \
+                  --destination-directory=./temp <your-mib-file>
+4. Copy <your-mib-file> to $PROJECT_ROOT/mibs/asn1
+5. Copy all the .py files from the ./temp dir to $PROJECT_ROOT/mibs/pysnmp
+
+Optional:
+6. Add <your-mib-file> to tests/lookups/mibs_list.csv
+7. Add a sample translation to test_translation.py::test_more_mib_files() and check that
+   everything looks good.

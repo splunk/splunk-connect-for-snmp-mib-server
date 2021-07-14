@@ -278,3 +278,29 @@ class TranslatorTest(TestCase):
             )
             json_metrics = json.loads(translated_metrics)
             assert json_metrics["metric_name"] == expected_translations[index]
+
+    @mongomock.patch()
+    def test_more_mib_files(self):
+        input_var_binds = [
+            {
+                "oid": "1.3.6.1.4.1.41456.1.2.1.1.42",
+                "val": "0",
+                "val_type": "Integer",
+            },
+            {
+                "oid": "1.3.6.1.4.1.48328.3.9.1.1",
+                "val": "sample",
+                "val_type": "DisplayString",
+            },
+        ]
+        expected_values = [
+            "sc4snmp.VMSTORE-MIB.mirrorLatency",
+            "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
+        ]
+
+        for i in range(0, len(input_var_binds)):
+            translated_metrics = self.my_translator.format_metric_data(
+                input_var_binds[i]
+            )
+            translated_dict = json.loads(translated_metrics)
+            assert translated_dict["metric_name"] == expected_values[i]

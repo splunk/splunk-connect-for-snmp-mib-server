@@ -1,0 +1,2675 @@
+VMSTORE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, OBJECT-IDENTITY, NOTIFICATION-TYPE,
+    Integer32, Unsigned32, enterprises
+        FROM SNMPv2-SMI
+    DisplayString, DateAndTime
+        FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP
+        FROM SNMPv2-CONF;
+
+tintri MODULE-IDENTITY
+    LAST-UPDATED "202003030000Z" -- March 03, 2020
+    ORGANIZATION "Tintri by DDN"
+    CONTACT-INFO "Tintri by DDN, Inc.
+                  9351 Deering Ave
+                  Chatsworth, CA 91311
+                  United States
+                  +1 408-419-2800
+                Email: info.tintri.com"
+    DESCRIPTION
+        "The MIB module for Tintri VMStore product."
+
+    REVISION      "201405210000Z"
+    DESCRIPTION
+        "This MIB supports Tintri OS 3.1 release."
+
+    REVISION      "201407280000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 3.1 release."
+        
+    REVISION      "201411140000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 3.1.1 release."
+        
+    REVISION      "201501150000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 3.2.0 release."
+
+    REVISION      "201504290000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.0.0 release."
+
+    REVISION      "201512080000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.1.0 release."
+
+    REVISION      "201512090000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.2.0 release."
+
+    REVISION      "201607180000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.0 release. Added new trap internalNetworkFailure, resourceBelowCriticalLevel, syncReplFailoverFailed, syncReplErrorState, syncReplOutOfSyncForTooLong, and SyncRepl related attributes to vmStorePerfStatsSummary."
+
+    REVISION      "201607260000Z"
+    DESCRIPTION
+        "Added new trap controllerRestarted."
+
+    REVISION      "201608100000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.0 release. Added new trap replLagThresholdBreach, vmExceedReplConfigMaxLimit."
+
+    REVISION      "201608220000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.0 release. Added new traps smbUnencryptedRequestWithGlobalEncryption and smbUnencryptedRequestWithGlobalEncryption."
+
+    REVISION      "201608290000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.0 release. Added new traps smbNtlmNoActiveDirectoryError, smbNtlmNoSmbHostNameError, smbNtlmAuthenticationError, smbKerberosNoActiveDirectoryError, smbKerberosNoSmbHostNameError, smbKerberosTimeDifferenceError and smbKerberosAuthenticationError."
+
+    REVISION      "201608300000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.0 release. Added new trap powerSupplyAcFailure, powerSupplyDcFailure, powerSupplyFailedRemoved."
+
+    REVISION      "201609140000Z"
+    DESCRIPTION
+        "Added new trap syncReplDataIntegrityProblem."
+ 
+    REVISION      "201611150000Z"
+    DESCRIPTION
+        "Added new trap highLatencyDriveProblem."
+
+    REVISION      "201612010000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.3.3 release. Added new trap vCenterAccessErrorCleared."
+
+    REVISION      "201703290000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Added new trap quotaThresholdExceeded."  
+
+    REVISION      "201705030000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Added new trap quotaOutOfSpace and quotaSnapshotCreationDisabled."  
+
+    REVISION      "201706020000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Added new trap cloudSnapshotSyncFailed and cloudSnapshotSyncFailedFsError."  
+
+    REVISION      "201706160000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Added new trap cloudSnapshotSyncFailedPerfDbError."  
+
+    REVISION      "201706230000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Added new trap replicateCloudSnapshotFailedLimitReached and cloudSnapshotSyncFailedLimitReached."
+
+    REVISION      "201707140000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.4.0 release. Updated description of trap syncReplDataIntegrityProblem."
+
+    REVISION      "201708180000Z"
+    DESCRIPTION
+        "Added new traps for evaluation license activation, expiration and its reminder."
+
+    REVISION      "201709220000Z"
+    DESCRIPTION
+        "Added new trap to reset admin password for using remote management."
+
+     REVISION      "201710060000Z"
+     DESCRIPTION
+        "Added new traps for hyperVHighFreqSnapshotNotAllowed when Vms have one or more shared (RSVD) disks."
+
+    REVISION      "201711080000Z"
+    DESCRIPTION
+        "Added new traps for filesystemEncounteredAnError."
+
+    REVISION      "201801080000Z"
+    DESCRIPTION
+        "Added new trap for external NTP syncronization."
+
+    REVISION      "201802010000Z"
+    DESCRIPTION
+        "Added new traps for space threshold."
+
+    REVISION      "201801250000Z"
+    DESCRIPTION
+        "Added new traps for syncReplFailoverPartialError, licenseSyncReplPauseFailure and licenseSyncReplPaused."
+
+    REVISION      "201802010000Z"
+    DESCRIPTION
+        "Added new traps for space threshold."
+
+    REVISION      "201802070000Z"
+    DESCRIPTION
+        "Added new trap for IPMB interface failure - ipmbInterfaceFailure."
+
+    REVISION      "201803200000Z"
+    DESCRIPTION
+        "Added new trap for SyncRepl automatic cluster failover - syncReplClusterFailover."
+
+    REVISION      "202002280000Z"
+    DESCRIPTION
+        "This MIB supports Tintri Vmstore 4.5.2 release. Added new traps for controller upgrade."
+        
+    REVISION      "202003020000Z"
+    DESCRIPTION
+        "Merged with 4.5 branch and re-updated ntpNotSyncExternalServer."
+
+    REVISION      "202003030000Z"
+    DESCRIPTION
+        "Introduced new platform alerts in 5.0.0.1"
+
+    REVISION      "202007140000Z"
+    DESCRIPTION
+        "Added missing traps from 4.4 and 4.5"
+
+    REVISION      "202012040000Z"
+    DESCRIPTION
+        "Added missing traps from 4.6.1.1"
+
+    ::= { enterprises 41456 }
+
+vmStore OBJECT-IDENTITY
+STATUS  current
+DESCRIPTION
+    "Parent of all managed objects relating to VMStore identification."
+::= { tintri 1 }
+
+vmStoreTraps OBJECT-IDENTITY
+    STATUS  current
+    DESCRIPTION
+    "..."
+    ::= { vmStore 1 }
+
+vmStorePerfStats OBJECT-IDENTITY
+    STATUS  current
+    DESCRIPTION
+    "..."
+    ::= { vmStore 2 }
+
+vmStoreMIBConformance OBJECT IDENTIFIER ::= { vmStore 100 }
+    
+
+-- **********************************************************
+-- Notification parameters
+-- **********************************************************
+
+vmstoreHostname OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS     current
+    DESCRIPTION
+    "This is the fully qualified name of the VMStore that generates the trap."
+    ::= { vmStoreTraps 1 }
+
+trapSeverity OBJECT-TYPE
+    SYNTAX   Integer32
+    MAX-ACCESS accessible-for-notify
+    STATUS     current
+    DESCRIPTION
+    "This is the trap severity level."
+    ::= { vmStoreTraps 2 }
+
+trapMessageId OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS     current
+    DESCRIPTION
+        "This is the alert message ID."
+    ::= { vmStoreTraps 3 }  
+
+trapMessage OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS     current
+    DESCRIPTION
+        "This field provides the notification information."
+    ::= { vmStoreTraps 4 }
+
+
+-- **********************************************************
+-- Notifications
+-- **********************************************************
+
+
+diskRAIDFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to form ExtentStore RAID. Contact support."
+    ::= { vmStoreTraps 101 }
+
+outOfSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore is out of space. Please remove any unused VMs or old snapshots to free up some space."
+    ::= { vmStoreTraps 102 }
+
+systemFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System failed to start. Do not power off. Contact support."
+    ::= { vmStoreTraps 103 }
+
+maxFileLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The filesystem has reached or is approaching the maximum number of files supported."
+    ::= { vmStoreTraps 104 }
+
+maxSnapshotFileLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maximum number of file-level snapshots in the filesystem has reached."
+    ::= { vmStoreTraps 105 }
+
+nearMaxSnapshotFileLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The number of file-level snapshots in the filesystem is approaching the maximum number of supported file-level snapshots allowed."
+    ::= { vmStoreTraps 106 }
+
+nvramFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to initialize NVRAM card."
+    ::= { vmStoreTraps 107 }
+
+upgradeFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "..."
+    ::= { vmStoreTraps 108 }
+
+controllerFailover NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A standby controller is taking over."
+    ::= { vmStoreTraps 109 }
+
+networkLinkLost NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The network links lost carrier; standby controller is taking over."
+    ::= { vmStoreTraps 110 }
+
+systemNotRedundant NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System has been non-redundant for an extended period."
+    ::= { vmStoreTraps 111 }
+
+networkPortFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The network port has failed. Contact customer support to schedule a replacement."
+    ::= { vmStoreTraps 112 }
+
+networkErrorRateLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maximum error rate exceeded for network port."
+    ::= { vmStoreTraps 113 }
+
+networkFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The network is down. Check Ethernet cables."
+    ::= { vmStoreTraps 114 }
+
+controllerPoweroff NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A controller has been powered off."
+    ::= { vmStoreTraps 115 }
+
+controllerPoweron NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A controller is powered back on."
+    ::= { vmStoreTraps 116 }
+
+controllerRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A controller has been removed from the system."
+    ::= { vmStoreTraps 117 }
+
+controllerInserted NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A controller has been inserted into the system."
+    ::= { vmStoreTraps 118 }
+
+fanFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A fan appears to have stopped functioning."
+    ::= { vmStoreTraps 119 }
+
+controllerError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to identify controller type."
+    ::= { vmStoreTraps 120 }
+
+peerCommunicationFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Issue with peer controller communication"
+    ::= { vmStoreTraps 121 }
+
+powerSupplyInput  NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply has lost AC input."
+    ::= { vmStoreTraps 122 }
+
+powerSupplyFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply has output failure."
+    ::= { vmStoreTraps 123 }
+
+powerSupplyRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply appears to be removed."
+    ::= { vmStoreTraps 124 }
+
+powerSupplyTurnedOff NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply appears to be turned off."
+    ::= { vmStoreTraps 125 }
+        
+powerSupplyFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply has no AC input or DC output."
+    ::= { vmStoreTraps 126 }
+
+tempThresholdExceeded NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System's temperature has risen above critical threshold."
+    ::= { vmStoreTraps 127 }
+
+tempBelowNormal NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System's temperature is below normal range."
+    ::= { vmStoreTraps 128 }
+
+chassisError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to identify chassis."
+    ::= { vmStoreTraps 129 }
+
+
+diskRebuildFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Rebuilding disk failed."
+    ::= { vmStoreTraps 130 }
+
+hardwareComponentFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A hardware component has failed."
+    ::= { vmStoreTraps 131 }
+
+hardwareComponentMissing NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A hardware component is missing."
+    ::= { vmStoreTraps 132 }
+
+raidRebuildPending NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk has failed. Rebuilding will begin shortly with the current spare disk."
+    ::= { vmStoreTraps 133 }
+	
+raidRebuildStarted NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk rebuilt has started."
+    ::= { vmStoreTraps 134 }
+
+raidRebuildDone NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk rebuilt has completed."
+    ::= { vmStoreTraps 135 }
+
+diskFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk has failed. Replace it with a new spare disk."
+    ::= { vmStoreTraps 136 }
+
+diskMisplaced NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk is from a different system. Remove it. "
+    ::= { vmStoreTraps 137 }
+
+diskRebuilding NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk is now used for rebuilding RAID."
+    ::= { vmStoreTraps 138 }
+
+
+diskRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk has been removed."
+    ::= { vmStoreTraps 139 }
+
+diskInaccessible NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk is inaccessible."
+    ::= { vmStoreTraps 140 }
+
+diskRebuildDone NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Rebuilding RAID on disk is done."
+    ::= { vmStoreTraps 141 }
+
+diskWearOut NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk has reached its wear-out threshold."
+    ::= { vmStoreTraps 142 }
+
+
+maxESXConnectionReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cannot accept any more ESX hosts. Max number of connections reached."
+    ::= { vmStoreTraps 143 }
+
+errorAcceptingConnection NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Error in accepting new RPC connections."
+    ::= { vmStoreTraps 144 }
+
+maxVirtualDiskPinnedLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maximum of virtual disk limit has reached."
+    ::= { vmStoreTraps 145 }
+
+
+diskFirmwareUpgradeFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk firmware upgrade failed."
+    ::= { vmStoreTraps 146 }
+
+duplicatedIPaddressDetected NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Another device is duplicating this system's IP address."
+    ::= { vmStoreTraps 147 }
+
+replNetworkRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The replication adapter has been removed from the system."
+    ::= { vmStoreTraps 148 }
+
+dataNetworkRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The 10Gb data adapter has been removed from the system."
+    ::= { vmStoreTraps 149 }
+
+deviceNotSupported NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Device has an unsupported SFP."
+    ::= { vmStoreTraps 150 }
+
+
+replicationFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "..."
+    ::= { vmStoreTraps 151 }
+
+lowOnSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Space capacity is near full."
+    ::= { vmStoreTraps 152 }
+
+generateReportFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Autosupport report generation failed."
+    ::= { vmStoreTraps 153 }
+
+unsupportedDiskFormat NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk formats of VMs are not supported (e.g. sparse disk, raw disk)."
+    ::= { vmStoreTraps 154 }
+
+vCenterAccessError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Unable to log in to vCenter."
+    ::= { vmStoreTraps 155 }
+
+cloneOperationFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Clone operation failed."
+    ::= { vmStoreTraps 156 }
+
+snapshotOperationFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Snapshot operation failed."
+    ::= { vmStoreTraps 157 }
+
+maxConcurrentOperationsAllowedReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System reached maximum concurrent operations."
+    ::= { vmStoreTraps 158 }
+
+vCenterDuplicateUuid NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Detected instance UUID collision between two or more virtual machines."
+    ::= { vmStoreTraps 159 }
+
+systemError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System error."
+    ::= { vmStoreTraps 160 }
+
+testTrap NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "This is a test trap."
+    ::= { vmStoreTraps 161 }
+
+nfsAccessControlDbUpgradeFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "NFS Access Control DB upgrade failed."
+    ::= { vmStoreTraps 162 }
+
+evalLicenseExpired NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Evaluation license has expired and must be replaced with a permanent license for continued operation."
+    ::= { vmStoreTraps 163 }
+
+maintenanceModeEnabled NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maintenance mode is enabled."
+    ::= { vmStoreTraps 164 }
+
+maintenanceModeDisabled NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maintenance mode is disabled."
+    ::= { vmStoreTraps 165 }
+
+maintenanceModeAutoDisabled NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Maintenance mode is disabled automatically."
+    ::= { vmStoreTraps 166 }
+
+hasSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore has free space again."
+    ::= { vmStoreTraps 167 }
+
+replHasSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore has freed up space. If replication is configured receiving replication data has been enabled."
+    ::= { vmStoreTraps 168 }
+
+replOutOfSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore is running low on space. If replication is configured receiving replication data has been disabled. Please remove any unused VMs or old snapshots to free up some space."
+    ::= { vmStoreTraps 169 }
+
+snapshotHasSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore has freed up space. Snapshot creation has been enabled."
+    ::= { vmStoreTraps 170 }
+
+snapshotOutOfSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Datastore is running low on space. Snapshot creation has been disabled. Please remove any unused VMs or old snapshots to free up some space."
+    ::= { vmStoreTraps 171 }
+
+permissionDenied NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Access control rejected user request."
+    ::= { vmStoreTraps 172 }
+
+overPinned NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "You have pinned too many VMs. Pinned VMs are no longer guaranteed flash performance. Unpin some VMs or virtual disks to avoid problems."
+    ::= { vmStoreTraps 173 }
+
+preserveTintriUuidFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Preserve Tintri UUID Failed. This is from either SRA or VM clone when trying to preserve the Tintri UUID."
+    ::= { vmStoreTraps 174 }
+
+performanceDatabaseDown NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Performance database is down. System wide and per-vm performance stats cannot be read or saved. Please contact support."
+    ::= { vmStoreTraps 175 }
+
+setServicePrincipalFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to set service principal name after joining domain. Hyper-V VM access will be denied. Please contact support."
+    ::= { vmStoreTraps 176 }
+
+snapshotInventorySyncFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Full sync snapshots from file system failed. Snapshot and clone operation are restricted. Please contact support."
+    ::= { vmStoreTraps 177 }
+
+syncVmOperationFailedAndVmUnstable NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "SyncVM operation has failed and virtal machine is in an unstable state. You can restore virtual machine from the safety snapshot with Restore VM operation. If problem persists, please contact support."
+    ::= { vmStoreTraps 178 }
+
+domInaccessible NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "DOM is inaccessible."
+    ::= { vmStoreTraps 179 }
+
+domWearOut NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "DOM has reached its wear-out threshold."
+    ::= { vmStoreTraps 180 }
+
+domFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "DOM has failed. Replace it with a new spare DOM."
+    ::= { vmStoreTraps 181 }
+
+domRebuilding NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "DOM is now used for rebuilding RAID."
+    ::= { vmStoreTraps 182 }
+
+domRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "DOM has been removed."
+    ::= { vmStoreTraps 183 }
+
+domRebuildDone NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Rebuilding RAID on DOM is done."
+    ::= { vmStoreTraps 184 }
+
+ioPortEnableFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Enable I/O Port failed."
+    ::= { vmStoreTraps 185 }
+
+ioPortEnableSucceed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Enable I/O Port succeeded."
+    ::= { vmStoreTraps 186 }
+
+invalidInitialKeyGen NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Invalid Initial Key Generation."
+    ::= { vmStoreTraps 187 }
+
+certificateError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "SSL certificate error."
+    ::= { vmStoreTraps 188 }
+
+ovfOperationFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "OVF operation failed."
+    ::= { vmStoreTraps 189 }
+
+grantAccessFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to grant Super admin management access to VMstore machine account. Hyper-V operations access will be denied. Please contact support."
+    ::= { vmStoreTraps 190 }
+
+systemFirmwareUpgradeFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "System firmware upgrade failed."
+    ::= { vmStoreTraps 191 }
+
+changeWinbindPasswordFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to change ADS machine trust account password. Data and management services will be disrupted. Please contact support."
+    ::= { vmStoreTraps 192 }
+
+addShelfFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Addition of shelf failed. Please retry or contact support."
+    ::= { vmStoreTraps 193 }
+
+internalNetworkFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The internal network is down. Please contact support."
+    ::= { vmStoreTraps 194 }
+
+syncReplFailoverFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failover operation was initiated but did not complete successfully because of VMstore failure, software issue, or other cause. The VMs are not currently protected by Synchronous Replication. The datastore could be also be affected and VMs could be offline. Please check the status of the Synchronous Replication for both VMstores. If needed, please retry the operation. If the problem persists, please contact support."
+    ::= { vmStoreTraps 195 }
+
+syncReplErrorState NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A synchronous replication service group is in ERROR state. Please refer to the TGC or VMstore UI for more information and possible solution. If the problem persists, please contact support."
+    ::= { vmStoreTraps 196 }
+
+syncReplOutOfSyncForTooLong NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A synchronous replication service group is out of sync for too long. Please refer to the TGC or VMstore UI for more information and possible solution. If the problem persists, please contact support."
+    ::= { vmStoreTraps 197 }
+
+replLagThresholdBreach NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Alert RPO threshold has been breached for one or more VMs. Please check for network/bandwidth issues or increase alert RPO threshold. If the problem persists, please contact support."
+    ::= { vmStoreTraps 198 }
+
+vmExceedReplConfigMaxLimit NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "One or more VMs have exceeded the maximum of 4 outgoing replication configurations per VM. As a result, replication performance degradation might be observed on this system. Please reduce the number of outgoing replication configurations for these VMs. If the problem persists, please contact support."
+    ::= { vmStoreTraps 199 }
+
+controllerRestarted NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "An unexpected restart of controller has occurred which must be investigated by Support. Please contact Tintri Support for determination of the cause."
+    ::= { vmStoreTraps 200 }
+
+resourceBelowCriticalLevel NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Resource below critical level"
+    ::= { vmStoreTraps 201 }
+
+diskPoweredOff NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk is powered off. It may have failed and need to be replaced."
+    ::= { vmStoreTraps 202 }
+
+smbUnencryptedRequestWithGlobalEncryption NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Rejected unencrypted SMB request on encrypted session. One or more VMs on the host may restart or hang. Allow unencrypted requests by turning off the SMB setting 'Reject unencrypted access'."
+    ::= { vmStoreTraps 203 }
+
+smbUnencryptedRequestWithShareEncryption NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Rejected unencrypted SMB request on encrypted share. One or more VMs on the host may restart or hang. Allow unencrypted requests by turning off the SMB setting 'Reject unencrypted access'."
+    ::= { vmStoreTraps 204 }
+
+smbNtlmNoActiveDirectoryError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Denied unsupported NTLM authentication request from a host. VM management operations may fail or VMs may go into critical state. Please configure Directory services in Active Directory mode."
+    ::= { vmStoreTraps 205 }
+
+smbNtlmNoSmbHostNameError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS deprecated
+    DESCRIPTION
+          "Denied unsupported NTLM authentication request from a host. VM management operations may fail or VMs may go into critical state. Please check SMB settings and set SMB hostname for the VMstore so that the host uses Kerberos authentication."
+    ::= { vmStoreTraps 206 }
+
+smbNtlmAuthenticationError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS deprecated
+    DESCRIPTION
+          "Denied unsupported NTLM authentication request from a host. VM management operations may fail or VMs may go into critical state. Please check that the host can get Kerberos tickets for the VMstore SMB hostname used in the UNC file share path. If applicable, setup Kerberos constrained delegation in Active Directory on the host to the VMstore SMB hostname. If the problem persists, please contact support."
+    ::= { vmStoreTraps 207 }
+
+smbKerberosNoActiveDirectoryError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Kerberos authentication request from a host failed. VM management operations may fail or VMs may go into critical state. Please configure Directory services in Active Directory mode."
+    ::= { vmStoreTraps 208 }
+
+smbKerberosNoSmbHostNameError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS deprecated
+    DESCRIPTION
+          "Kerberos authentication request from a host failed. VM management operations may fail or VMs may go into critical state. Please check SMB settings and set SMB hostname for the VMstore."
+    ::= { vmStoreTraps 209 }
+
+smbKerberosTimeDifferenceError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Kerberos authentication request from a host failed due to time difference between the VMstore and the host. VM management operations may fail or VMs may go into critical state. Please verify that NTP is configured on the VMstore and that the time on the host is synchronized with the NTP server."
+    ::= { vmStoreTraps 210 }
+
+smbKerberosAuthenticationError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Kerberos authentication request from a host failed. VM management operations may fail or VMs may go into critical state. Please purge the Kerberos tickets on the host that belong to the run-as account and the host computer account. If the problem persists, please contact support."
+    ::= { vmStoreTraps 211 }
+
+powerSupplyAcFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply AC error or AC cable disconnected."
+    ::= { vmStoreTraps 212 }
+
+powerSupplyDcFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply failed."
+    ::= { vmStoreTraps 213 }
+
+powerSupplyFailedRemoved NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Power supply failed and removed."
+    ::= { vmStoreTraps 214 }
+
+externalKeyManagerCommunicationError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The external key manager is not available."
+    ::= { vmStoreTraps 215 }
+
+externalKeyManagerCertificateError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "The external key manager certificate is expired or expiring soon."
+    ::= { vmStoreTraps 216 }
+
+syncReplDataIntegrityProblem NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Synchronous Replication has been disabled on a submount because an internal error was detected. If your system is configured to send Alerts to Tintri, support will contact you shortly to assist. If your system is not configured to send Alerts to Tintri, please contact Tintri Support to resolve this issue."
+    ::= { vmStoreTraps 217 }
+    
+highLatencyDriveProblem NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disk is experiencing high latencies; this can cause high VM I/O latencies, and degrade system performance. Please contact support. The disk might need to be replaced."
+    ::= { vmStoreTraps 218 }
+
+vCenterAccessErrorCleared NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Connectivity to hypervisor manager has been restored."
+    ::= { vmStoreTraps 219 }
+
+quotaThresholdExceeded NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Quota threshold has been exceeded."
+    ::= { vmStoreTraps 220 }
+
+quotaOutOfSpace NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Quota is out of space."
+    ::= { vmStoreTraps 221 }
+
+quotaSnapshotCreationDisabled NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Snapshot creation is disabled due to quota used space passing the filesystem threshold."
+    ::= { vmStoreTraps 222 }
+
+cloudSnapshotSyncFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cloud snapshots synchronous process failed due to cloud destination error."
+    ::= { vmStoreTraps 223 }
+
+cloudSnapshotSyncFailedFsError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cloud snapshots synchronous process failed due to filesystem is down."
+    ::= { vmStoreTraps 224 }
+
+cloudSnapshotSyncFailedPerfDbError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cloud snapshots synchronous process failed due to performance database is down."
+    ::= { vmStoreTraps 225 }
+
+snapshotWithSameGlobalIdExists  NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cannot create snapshot as a snapshot with the same SnapshotGlobalId exists."
+    ::= { vmStoreTraps 226 }
+
+replicateCloudSnapshotFailedLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to replicate cloud snapshots because system limit for cloud snapshots has reached."
+    ::= { vmStoreTraps 227 }
+
+cloudSnapshotSyncFailedLimitReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Cloud snapshots synchronous process failed because system limit for cloud snapshots has reached."
+    ::= { vmStoreTraps 228 }
+
+evaluationLicenseActivated NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Evaluation license has been activated."
+    ::= { vmStoreTraps 229 }
+
+evaluationLicenseExpiring NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Evaluation license will expire soon. Please contact Tintri sales to purchase a permanent license."
+    ::= { vmStoreTraps 230 }
+
+evaluationLicenseExpired NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Evaluation license has expired. Please contact Tintri sales to purchase a permanent license."
+    ::= { vmStoreTraps 231 }
+
+remoteMgmtAdminPasswordResetRequired NOTIFICATION-TYPE
+     OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+	  "A reset of your ADMIN credentials is required to activate the controller MGMT port for remote console and power control functionality."
+    ::= { vmStoreTraps 232 }
+
+hyperVHighFreqSnapshotNotAllowed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+	  "High frequency snapshots disables for VMs with one or more shared(RSVD) disks."
+    ::= { vmStoreTraps 233 }
+
+filesystemEncounteredAnError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Filesystem encountered an error."
+    ::= { vmStoreTraps 234 }
+
+spaceLowThresholdReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Space low threshold reached."
+    ::= { vmStoreTraps 235 }
+
+spaceHighThresholdReached NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Space high threshold reached."
+    ::= { vmStoreTraps 236 }
+
+syncReplFailoverPartialError NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Synchronous Replication Failover encountered partial error."
+    ::= { vmStoreTraps 237 }
+
+licenseSyncReplPauseFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Synchronously replicated service group may be paused due to missing Synchronous Replication or Master license."
+    ::= { vmStoreTraps 238 }
+
+licenseSyncReplPaused NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Paused all Synchronous Replication configurations because of missing either Synchronous Replication or Master License."
+    ::= { vmStoreTraps 239 }
+
+ipmbInterfaceFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A hardware interface check (IPMB) failed."
+    ::= { vmStoreTraps 240 }
+
+syncReplClusterFailover NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+        "An automatic cluster failover has occurred on a synchronously replicated submount."
+    ::= { vmStoreTraps 241 }
+
+hwUpgradeFailedControllerTooOld NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "TXOS is too old for controller upgrade. Upgrade TXOS and retry."
+    ::= { vmStoreTraps 242 }
+
+
+hwUpgradeIncomplete NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Controller upgrade is incomplete. Please check the other controller and completes the upgrade."
+    ::= { vmStoreTraps 243 }
+
+ntpNotSyncExternalServer NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "NTP not synchronized with external source."
+    ::= { vmStoreTraps 244 }
+
+unsupportedPort NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "One of the ports has an unsupported SFP/SFP+. Replace it with a supported SFP/SFP+."
+    ::= { vmStoreTraps 245 }
+    
+unsupportedNic NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Unsupported Network Interface Card (NIC) detected. Please replace it with a supported NIC or contact support."
+    ::= { vmStoreTraps 246 }
+    
+        
+memoryVoltageSettingIncorrect NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Memory voltage setting is not correct. Please contact support."
+    ::= { vmStoreTraps 247 }
+
+
+controllerHasFailure NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Controller has encountered a failure. Please contact support."
+    ::= { vmStoreTraps 248 }
+
+
+platformIOPortDisableFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Unable to disable an I/O port after it has been experiencing repeated power cycles. Please contact support."
+    ::= { vmStoreTraps 249 }
+
+
+platformIOPortDisabled NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "An I/O port has been disabled after it has been experiencing repeated power cycles. Please contact support."
+    ::= { vmStoreTraps 250 }
+
+
+fsBackgroundFileReclaimStopped NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disabling background file reclamation due to an internal error. Filesystem space utilization will increase. Please contact support."
+    ::= { vmStoreTraps 251 }
+
+
+fsBackgroundSnapshotReclaimStopped1 NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Disabling background snapshot reclamation due to an internal error. Filesystem space utilization will increase. Please contact support."
+    ::= { vmStoreTraps 252 }
+
+
+fsBackgroundSnapshotReclaimStopped2 NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "An error is detected in snapshot deletion of a file. Disabling background snapshot reclamation for all snapshots of this file. Filesystem space utilization will increase. Please contact support."
+    ::= { vmStoreTraps 253 }
+
+
+rbacAdsAccountChangeKeyFailed NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Failed to change ADS machine trust account key. Please contact support if data and management access relying on active directory is interrupted."
+    ::= { vmStoreTraps 254 }
+
+
+remoteMgmtAdminPasswordResetRequired2 NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "A reset of your ADMIN credentials is required to activate the controller MGMT port for remote console and power control functionality."
+    ::= { vmStoreTraps 255 }
+
+clocksourceSlow NOTIFICATION-TYPE
+    OBJECTS  {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage }
+    STATUS current
+    DESCRIPTION
+          "Clocksource may be slow."
+    ::= { vmStoreTraps 256 }
+
+-- **********************************************************
+-- The vmstore performance statistics summary table
+-- **********************************************************
+
+vmStorePerfStatsSummaryTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF VMStorePerfStatsSummaryEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "This table provides the VMstore performance statistics summary for various resources."
+    ::= { vmStorePerfStats 1 }
+
+vmStorePerfStatsSummaryEntry OBJECT-TYPE
+    SYNTAX      VMStorePerfStatsSummaryEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "A conceptual row in the vmStorePerfStatsSummaryTable."
+    INDEX { vmStorePerfStatsSummaryIndex }
+    ::= { vmStorePerfStatsSummaryTable 1 }
+
+VMStorePerfStatsSummaryEntry ::= SEQUENCE {
+    vmStorePerfStatsSummaryIndex    Integer32,
+    perfStatsCollectionDate         DateAndTime,
+    uptime                          DisplayString,
+    model                           DisplayString,
+    swVersion                       DisplayString,
+    serialNumber                    DisplayString,
+    vmStoreStatus                   INTEGER,
+    numUnreadAlerts                 Unsigned32,
+    manualAssignedPerfResource      Unsigned32,
+    autoAssignedPerfResource        Unsigned32,
+    orphanedSpace                   Unsigned32,
+    tintriSnapshotSpace             Unsigned32,
+    vmwSnapshotSpace                Unsigned32,
+    liveDataSpace                   Unsigned32,
+    remainingSpace                  Unsigned32,
+    provisionedPercent              Unsigned32,
+    daysTillFull                    Unsigned32,
+    throughput                      Unsigned32,
+    lowThroughput                   Unsigned32,
+    highThroughput                  Unsigned32,
+    iops                            Unsigned32,
+    lowIops                         Unsigned32,
+    highIops                        Unsigned32,
+    latency                         Unsigned32,
+    hostLatency                     Unsigned32,
+    networkLatency                  Unsigned32,
+    fsLatency                       Unsigned32,
+    diskLatency                     Unsigned32,
+    cacheHitRatio                   Unsigned32,
+    replLinkCount                   Unsigned32,
+    replOutgoingCount               Unsigned32,
+    replIncomingCount               Unsigned32,
+    replBytesRemaining              Unsigned32,
+    replSrcLogicalThroughput        Unsigned32,
+    replSrcPhysicalThroughput       Unsigned32,
+    replDstLogicalThroughput        Unsigned32,
+    replDstPhysicalThroughput       Unsigned32,
+    replSrcLogicalReplicatedPerDay  Unsigned32,
+    replDstLogicalReplicatedPerDay  Unsigned32,
+    replSrcPhysicalReplicatedPerDay Unsigned32,
+    replDstPhysicalReplicatedPerDay Unsigned32,
+    mirrorLatency                   Unsigned32,
+    mirrorReadLatency               Unsigned32,
+    mirrorWriteLatency              Unsigned32,
+    mirrorWriteNetworkLatency       Unsigned32
+}
+
+
+vmStorePerfStatsSummaryIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..65535)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "An arbitrary integer value which uniquely identifies a
+            row in this table.  "
+    ::= { vmStorePerfStatsSummaryEntry 1 }
+
+perfStatsCollectionDate OBJECT-TYPE
+    SYNTAX      DateAndTime
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Time of data collection."
+    ::= { vmStorePerfStatsSummaryEntry 2 }
+
+
+uptime OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "System up time."
+    ::= { vmStorePerfStatsSummaryEntry 3 }
+
+model OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "VMstore model"
+    ::= { vmStorePerfStatsSummaryEntry 4 }
+    
+swVersion OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Software version."
+    ::= { vmStorePerfStatsSummaryEntry 5 }
+
+serialNumber OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "..."
+    ::= { vmStorePerfStatsSummaryEntry 6 }
+    
+vmStoreStatus OBJECT-TYPE
+    SYNTAX  INTEGER {
+              up(1),
+              down(2)
+            }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The status of the filesystem."
+    ::= { vmStorePerfStatsSummaryEntry 7 }
+
+numUnreadAlerts OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Number of unread alerts."
+    ::= { vmStorePerfStatsSummaryEntry 8 }
+    
+manualAssignedPerfResource OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Pinned performance reserves, measured in percent."
+    ::= { vmStorePerfStatsSummaryEntry 9 }
+
+autoAssignedPerfResource OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Auto-allocated performance reserves, measured in percent."
+    ::= { vmStorePerfStatsSummaryEntry 10 }
+
+orphanedSpace OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "GB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Orphaned space in GB."
+    ::= { vmStorePerfStatsSummaryEntry 11 }
+
+tintriSnapshotSpace OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "GB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Space used by Tintri snapshots in Gigabytes."
+    ::= { vmStorePerfStatsSummaryEntry 12 }
+
+vmwSnapshotSpace OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "GB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Space used by VMware snapshot in Gigabytes."
+    ::= { vmStorePerfStatsSummaryEntry 13 }
+
+
+liveDataSpace OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "GB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Space used by data files that make up a VM in Gigabytes."
+    ::= { vmStorePerfStatsSummaryEntry 14 }
+
+remainingSpace OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "GB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Remaining space available on datastore in Gigabytes."
+    ::= { vmStorePerfStatsSummaryEntry 15 }
+
+provisionedPercent OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The total amount of disk space provisioned for all virtual machines as percentage of system total."
+    ::= { vmStorePerfStatsSummaryEntry 16 }
+
+daysTillFull OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Days until space capacity is exhausted."
+    ::= { vmStorePerfStatsSummaryEntry 17 }
+
+throughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Current throughput, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 18 }
+
+
+lowThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Lowest 10-minute-average throughput from the past 7 days, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 19 }
+
+highThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Highest 10-minute-average throughput from the past 7 days, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 20 }
+
+iops OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Total IOPS includes both reads and writes."
+    ::= { vmStorePerfStatsSummaryEntry 21 }
+
+
+lowIops OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Lowest 10-minute-average IOPS from the past 7 days."
+    ::= { vmStorePerfStatsSummaryEntry 22 }
+
+highIops OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Highest 10-minute-average IOPS from the past 7 days."
+    ::= { vmStorePerfStatsSummaryEntry 23 }
+
+
+latency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Average measured latency in milliseconds to respond to data request."
+    ::= { vmStorePerfStatsSummaryEntry 24 }
+
+hostLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Overall latency in milliseconds contributed by the ESX hosts."
+    ::= { vmStorePerfStatsSummaryEntry 25 }
+
+networkLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Overall latency in milliseconds contributed by the network."
+    ::= { vmStorePerfStatsSummaryEntry 26 }
+
+fsLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Overall latency in milliseconds contributed by the Tintri storage excluding hard disks."
+    ::= { vmStorePerfStatsSummaryEntry 27 }
+
+diskLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Overall latency in milliseconds contributed by the hard disks."
+    ::= { vmStorePerfStatsSummaryEntry 28 }
+
+cacheHitRatio OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The current cache hit ratio, measured in percent of IO satisfied from flash storage."
+    ::= { vmStorePerfStatsSummaryEntry 29 }
+
+replLinkCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Number of replication paths configured in the system."
+    ::= { vmStorePerfStatsSummaryEntry 30 }
+
+replOutgoingCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Number of VMs configured for outgoing replication in the system."
+    ::= { vmStorePerfStatsSummaryEntry 31 }
+
+replIncomingCount OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Number of VMs being replicated onto this system."
+    ::= { vmStorePerfStatsSummaryEntry 32 }
+
+replBytesRemaining OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The logical amount of data yet to be replicated system wide."
+    ::= { vmStorePerfStatsSummaryEntry 33 }
+
+replSrcLogicalThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Logical outgoing replication rate, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 34 }
+
+replSrcPhysicalThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Physical outgoing replication rate, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 35 }
+
+replDstLogicalThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Logical incoming replication rate, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 36 }
+
+replDstPhysicalThroughput OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB/s"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Physical incoming replication rate, measured in MBps."
+    ::= { vmStorePerfStatsSummaryEntry 37 }
+
+replSrcLogicalReplicatedPerDay OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Logical amount of outgoing data replicated in the past 24 hours, measured in MB."
+    ::= { vmStorePerfStatsSummaryEntry 38 }
+
+replDstLogicalReplicatedPerDay OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Logical amount of incoming data replicated in the past 24 hours, measured in MB."
+    ::= { vmStorePerfStatsSummaryEntry 39 }
+
+replSrcPhysicalReplicatedPerDay OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Physical amount of outgoing data replicated in the past 24 hours, measured in MB."
+    ::= { vmStorePerfStatsSummaryEntry 40 }
+
+replDstPhysicalReplicatedPerDay OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "MB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Physical amount of incoming data replicated in the past 24 hours, measured in MB."
+    ::= { vmStorePerfStatsSummaryEntry 41 }
+
+mirrorLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Overall latency in milliseconds contributed by synchronous replication."
+    ::= { vmStorePerfStatsSummaryEntry 42 }
+
+mirrorReadLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Read latency in milliseconds contributed by synchronous replication."
+    ::= { vmStorePerfStatsSummaryEntry 43 }
+
+mirrorWriteLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Write latency in milliseconds contributed by synchronous replication."
+    ::= { vmStorePerfStatsSummaryEntry 44 }
+
+mirrorWriteNetworkLatency OBJECT-TYPE
+    SYNTAX      Unsigned32
+    UNITS       "milliseconds"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Network write latency in milliseconds contributed by synchronous replication."
+    ::= { vmStorePerfStatsSummaryEntry 45 }
+
+-- compliance statements
+
+vmStoreMIBCompliances OBJECT IDENTIFIER ::= { vmStoreMIBConformance 1 }
+
+vmStoreCompliance MODULE-COMPLIANCE
+STATUS  current
+DESCRIPTION
+    "The compliance statement for entities which implement the VMSTORE-MIB."
+MODULE  -- this module
+MANDATORY-GROUPS { vmStoreMIBPerfStatsGroup, vmStoreMIBNotificationGroup, vmStoreNotificationsGroup }
+::= { vmStoreMIBCompliances 1 }
+
+
+vmStoreMIBGroups  OBJECT IDENTIFIER ::= { vmStoreMIBConformance 2 }
+
+vmStoreNotificationsGroup  NOTIFICATION-GROUP
+    NOTIFICATIONS { diskRAIDFailed,
+                    outOfSpace,
+                    systemFailure,
+                    maxFileLimitReached,
+                    maxSnapshotFileLimitReached,
+                    nearMaxSnapshotFileLimitReached,
+                    nvramFailure,
+                    controllerFailover,
+                    networkLinkLost,
+                    systemNotRedundant,
+                    networkPortFailed,
+                    networkErrorRateLimitReached,
+                    networkFailure,
+                    controllerPoweroff,
+                    controllerPoweron,
+                    controllerRemoved,
+                    controllerInserted,
+                    fanFailed,
+                    controllerError,
+                    peerCommunicationFailed,
+                    powerSupplyInput,
+                    powerSupplyFailed,
+                    powerSupplyRemoved,
+                    powerSupplyFailedRemoved,
+                    powerSupplyTurnedOff,
+                    powerSupplyFailure,
+                    powerSupplyAcFailure,
+                    powerSupplyDcFailure,
+                    tempThresholdExceeded,
+                    tempBelowNormal,
+                    chassisError,
+                    diskRebuildFailed,
+                    hardwareComponentFailed,
+                    hardwareComponentMissing,
+                    raidRebuildPending,
+                    raidRebuildStarted,
+                    raidRebuildDone,
+                    diskFailed,
+                    diskMisplaced,
+                    diskRebuilding,
+                    diskRemoved,
+                    diskInaccessible,
+                    diskRebuildDone,
+                    diskWearOut,
+                    maxESXConnectionReached,
+                    errorAcceptingConnection,
+                    maxVirtualDiskPinnedLimitReached,
+                    diskFirmwareUpgradeFailed,
+                    duplicatedIPaddressDetected,
+                    upgradeFailure,
+                    replNetworkRemoved,
+                    dataNetworkRemoved,
+                    deviceNotSupported,
+                    replicationFailure,					
+                    lowOnSpace,
+                    generateReportFailed,
+                    unsupportedDiskFormat,
+                    vCenterAccessError,
+                    cloneOperationFailed,
+                    snapshotOperationFailed,
+                    maxConcurrentOperationsAllowedReached,
+                    vCenterDuplicateUuid,   
+                    systemError,
+                    testTrap,
+                    nfsAccessControlDbUpgradeFailed,
+                    evalLicenseExpired,
+                    maintenanceModeEnabled,
+                    maintenanceModeDisabled,
+                    maintenanceModeAutoDisabled,
+                    hasSpace,
+                    replHasSpace,
+                    replOutOfSpace,
+                    snapshotHasSpace,
+                    snapshotOutOfSpace,
+                    permissionDenied,
+                    overPinned,
+                    preserveTintriUuidFailed,
+                    performanceDatabaseDown,
+                    setServicePrincipalFailed,
+                    snapshotInventorySyncFailed,
+                    syncVmOperationFailedAndVmUnstable,
+                    domInaccessible,
+                    domWearOut,
+                    domFailed,
+                    domRebuilding,
+                    domRemoved,
+                    domRebuildDone,
+                    ioPortEnableFailed,
+                    ioPortEnableSucceed,
+                    invalidInitialKeyGen,
+                    certificateError,
+                    ovfOperationFailed,
+                    grantAccessFailed,
+                    systemFirmwareUpgradeFailed,
+                    changeWinbindPasswordFailed,
+                    addShelfFailed,
+                    internalNetworkFailure,
+                    syncReplFailoverFailed,
+                    syncReplErrorState,
+                    syncReplOutOfSyncForTooLong,
+                    resourceBelowCriticalLevel,
+                    diskPoweredOff,
+                    controllerRestarted,
+                    replLagThresholdBreach,
+                    vmExceedReplConfigMaxLimit,
+                    smbUnencryptedRequestWithGlobalEncryption,
+                    smbUnencryptedRequestWithShareEncryption,
+                    smbNtlmNoActiveDirectoryError,
+                    smbNtlmNoSmbHostNameError,
+                    smbNtlmAuthenticationError,
+                    smbKerberosNoActiveDirectoryError,
+                    smbKerberosNoSmbHostNameError,
+                    smbKerberosTimeDifferenceError,
+                    smbKerberosAuthenticationError,
+                    externalKeyManagerCommunicationError,
+                    externalKeyManagerCertificateError,
+                    syncReplDataIntegrityProblem,
+                    highLatencyDriveProblem,
+                    vCenterAccessErrorCleared,
+                    quotaThresholdExceeded,
+                    quotaOutOfSpace,
+                    quotaSnapshotCreationDisabled,
+                    cloudSnapshotSyncFailed,
+                    cloudSnapshotSyncFailedFsError,
+                    cloudSnapshotSyncFailedPerfDbError,
+                    snapshotWithSameGlobalIdExists,
+                    replicateCloudSnapshotFailedLimitReached,
+                    cloudSnapshotSyncFailedLimitReached,
+                    evaluationLicenseActivated,
+                    evaluationLicenseExpiring,
+                    evaluationLicenseExpired,
+                    remoteMgmtAdminPasswordResetRequired,
+                    hyperVHighFreqSnapshotNotAllowed,
+                    filesystemEncounteredAnError,
+                    spaceLowThresholdReached,
+                    spaceHighThresholdReached,
+                    syncReplFailoverPartialError,
+                    licenseSyncReplPauseFailure,
+                    licenseSyncReplPaused,
+                    ipmbInterfaceFailure,
+                    syncReplClusterFailover,
+                    hwUpgradeFailedControllerTooOld,
+                    hwUpgradeIncomplete,
+                    ntpNotSyncExternalServer,
+                    unsupportedPort,
+                    unsupportedNic,
+                    memoryVoltageSettingIncorrect,
+                    controllerHasFailure,
+                    platformIOPortDisableFailed,
+                    platformIOPortDisabled,
+                    fsBackgroundFileReclaimStopped,
+                    fsBackgroundSnapshotReclaimStopped1,
+                    fsBackgroundSnapshotReclaimStopped2,
+                    rbacAdsAccountChangeKeyFailed,
+                    remoteMgmtAdminPasswordResetRequired2,
+                    clocksourceSlow
+        }
+    STATUS  current
+    DESCRIPTION
+            "The notification group for VMStore mib."
+    ::= { vmStoreMIBGroups 1 }
+
+vmStoreMIBNotificationGroup OBJECT-GROUP
+    OBJECTS {
+        vmstoreHostname,
+        trapSeverity,
+        trapMessageId,
+        trapMessage
+    }
+    STATUS  current
+    DESCRIPTION
+        "These objects provide notification details."
+    ::= { vmStoreMIBGroups 2 }
+
+vmStoreMIBPerfStatsGroup OBJECT-GROUP
+    OBJECTS {
+    perfStatsCollectionDate,
+    uptime,
+    model,
+    swVersion,
+    serialNumber,
+    numUnreadAlerts,
+    vmStoreStatus,
+    manualAssignedPerfResource,
+    autoAssignedPerfResource,
+    orphanedSpace,
+    tintriSnapshotSpace,
+    vmwSnapshotSpace,
+    liveDataSpace,
+    remainingSpace,
+    provisionedPercent,
+    daysTillFull,
+    throughput,
+    lowThroughput,
+    highThroughput,
+    iops,
+    lowIops,
+    highIops,
+    latency,
+    hostLatency,
+    networkLatency,
+    fsLatency,
+    diskLatency,
+    cacheHitRatio,
+    replLinkCount,
+    replOutgoingCount,
+    replIncomingCount,
+    replBytesRemaining,
+    replSrcLogicalThroughput,
+    replSrcPhysicalThroughput,
+    replDstLogicalThroughput,
+    replDstPhysicalThroughput,
+    replSrcLogicalReplicatedPerDay,
+    replDstLogicalReplicatedPerDay,
+    replSrcPhysicalReplicatedPerDay,
+    replDstPhysicalReplicatedPerDay,
+    mirrorLatency,
+    mirrorReadLatency,
+    mirrorWriteLatency,
+    mirrorWriteNetworkLatency
+    }
+    STATUS  current
+    DESCRIPTION
+        "These objects provide performance stats details."
+    ::= { vmStoreMIBGroups 3 }
+        
+END
