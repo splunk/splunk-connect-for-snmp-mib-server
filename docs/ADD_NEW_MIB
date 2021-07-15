@@ -36,18 +36,31 @@ We want to document here how to add a new MIB file to our server.
 4. run mibdump.py --mib-source http://mibs.thola.io/asn1/@mib@ \
                   --mib-source . --destination-format pysnmp \
                   --destination-directory=./temp <your-mib-file>
+   (in this particular example, <your-mib-file> would be TintriMIB.txt)
 4.1. If for some reason your environment doesn't have access to Internet (and hence cannot connect to
      http://mibs.thola.io/asn1/@mib@) you could simply use all the original MIB files we store in the
      splunk-connect-for-snmp-mib-server project under the folder $ROOT_PROJECT/mibs/asn1. Something like this
      would work as well (assuming on extracted "splunk-connect-for-snmp-mib-server" project under
      ""$HOME/PycharmProjects/splunk-connect-for-snmp-mib-server").
      mibdump.py --mib-source "$HOME/PycharmProjects/splunk-connect-for-snmp-mib-server/mibs/asn1" \
-                --mib-source . --destination-format pysnmp --destination-directory=./temp3 TintriMIB.txt
+                --mib-source . --destination-format pysnmp --destination-directory=./temp TintriMIB.txt
 
-5. Copy <your-mib-file> to $ROOT_PROJECT/mibs/asn1
+5. Copy <your-mib-file> to $ROOT_PROJECT/mibs/asn1. Before copying it you need to be sure the file name
+   is correct:
+   - open <your-mib-file> with a text editor
+   - check the name reported into the first line, for example for TintriMIB.txt we have:
+     (venv) lstoppa@C02DL3AAMD6R add_new_mib % head -1 TintriMIB.txt
+     VMSTORE-MIB DEFINITIONS ::= BEGIN
+   - <your-mib-name> must be renamed as the name reported before the "DEFINITION" keyword.
+   - now you can copy <your-possibly-renamed-mib-name> to $ROOT_PROJECT/mibs/asn1
+
 6. Copy all the .py files from the ./temp dir to $PROJECT_ROOT/mibs/pysnmp
+   - note that mibdump.py correctly create a file using the name specified in the
+     "DEFINITION" section, so you don't need to rename any of the .py files created by
+     mibdump.py.
 
 Optional:
-7. Add <your-mib-file> to tests/lookups/mibs_list.csv
+7. Add <your-possibly-renamed-mib-name> to tests/lookups/mibs_list.csv
 8. Add a sample translation to test_translation.py::test_more_mib_files() and check that
-   everything looks good.
+   everything looks good when running from $ROOT_PROJECT:
+   poetry run pytest
