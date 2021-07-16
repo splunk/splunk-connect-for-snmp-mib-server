@@ -58,7 +58,7 @@ class MibsRepository:
         self._mibs.delete_many({"filename": {"$regex": filename}})
 
     def clear(self):
-        self._mibs.remove()
+        self._mibs.delete_many({})
 
 
 class OidsRepository:

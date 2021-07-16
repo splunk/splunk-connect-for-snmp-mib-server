@@ -202,40 +202,16 @@ class Translator:
 
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
-        # Run var-binds through MIB resolver
         try:
             name = var_bind["oid"]
             val = var_bind["val"]
             translated_var_bind = rfc1902.ObjectType(
                 rfc1902.ObjectIdentity(name), val
             ).resolveWithMib(self._mib_view_controller)
-
-            logger.debug(f"* Translated PDU: {translated_var_bind.prettyPrint()}")
-            trans_string = translated_var_bind.prettyPrint().replace(" = ", "=")
-            trans_oid = trans_string.split("=")[0]
-            trans_val = trans_string.split("=")[1]
-            untranslated_val_type = var_bind["val_type"]
-
+        except Exception as e:
+            logger.error(f"Error happened in translation: {e} trying to lazy load MIBs")
             try:
-                # Check if oid exists in mongo oids collection and if oid was translated properly
-                no_mapping_mib_oid = self.check_mongo(name)
-                logger.debug(f"no_mapping_mib_oid: {no_mapping_mib_oid}")
-                if not no_mapping_mib_oid and self.is_not_translated(name, trans_oid):
-                    self.find_mib_file(name)
-
-                # Check if value exists in mongo oids collection and if value was translated properly when value is OID type
-                if (
-                    untranslated_val_type == "ObjectIdentifier"
-                    or untranslated_val_type == "ObjectIdentity"
-                ):
-                    no_mapping_mib_val = self.check_mongo(val)
-                    logger.debug(f"no_mapping_mib_val: {no_mapping_mib_val}")
-                    if not no_mapping_mib_val and self.is_not_translated(
-                        val, trans_val
-                    ):
-                        self.find_mib_file(val)
-
-                # Re-translated with the extra mibs
+                self.find_mib_file(name)
                 translated_var_bind = rfc1902.ObjectType(
                     rfc1902.ObjectIdentity(name), val
                 ).resolveWithMib(self._mib_view_controller)
@@ -245,13 +221,9 @@ class Translator:
 
             except Exception as e:
                 logger.debug(f"Error happened during translation checking: {e}")
-                pass
+                return None
 
-            return translated_var_bind.prettyPrint().replace(" = ", "=")
-        except Exception as e:
-            logger.error(f"Error happened in translation: {e}")
-        finally:
-            pass
+        return translated_var_bind.prettyPrint().replace(" = ", "=")
 
     # Translate SNMP PDU varBinds into MIB objects using custom translation table
     def custom_translator(self, oid):

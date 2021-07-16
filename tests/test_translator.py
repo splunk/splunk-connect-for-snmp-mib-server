@@ -19,6 +19,7 @@ import mongomock
 import yaml
 
 from splunk_connect_for_snmp_mib_server.translator import Translator
+from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
 import os
 import logging
 import json
@@ -81,9 +82,9 @@ class TranslatorTest(TestCase):
         server_config = {
             "snmp": {
                 "mibs": {
-                    "dir": "mibs/pysnmp",
+                    "dir": "./mibs/pysnmp",
                     "load_list": "lookups/mibs_list.csv",
-                    "mibs_path": "mibs",
+                    "mibs_path": "./mibs",
                 }
             },
             "mongo": {
@@ -92,6 +93,7 @@ class TranslatorTest(TestCase):
             },
         }
         self.my_translator = Translator(server_config)
+        upload_mibs(server_config)
 
     @mongomock.patch()
     def test_format_trap(self):
