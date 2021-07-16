@@ -1,0 +1,66 @@
+#   ########################################################################
+#   Copyright 2021 Splunk Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#   ########################################################################
+
+We want to document here how to add a new MIB file to our server.
+
+1. create a new empty folder (like mkdir -p "$HOME/add_new_mib" && cd "$HOME/add_new_mib")
+2. curl https://raw.githubusercontent.com/etingof/pysmi/master/scripts/mibdump.py -o mibdump.py && chmod a+x mibdump.py
+3. Now we need to tell mibdump.py where are the new missing MIB files we want to import. You can do this by
+   specifying an additional --mib-source parameter with a custom absolute path. In this case, just for semplicity,
+   I have copied the MIB file I want to add to our MIB server into the current folder. That's why I have added
+   "--mib-source .". As you can see, we need also to tell mibdump.py where to find all the required imports each MIB
+   file might have. For example TintriMIB.txt needs these external symbols:
+   IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, OBJECT-IDENTITY, NOTIFICATION-TYPE,
+    Integer32, Unsigned32, enterprises
+        FROM SNMPv2-SMI
+    DisplayString, DateAndTime
+        FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP
+        FROM SNMPv2-CONF;
+    and these symbols are defined in SNMPv2-SMI, SNMPv2-TC, and SNMPv2-CONF.
+
+4. run mibdump.py --mib-source http://mibs.thola.io/asn1/@mib@ \
+                  --mib-source . --destination-format pysnmp \
+                  --destination-directory=./temp <your-mib-file>
+   (in this particular example, <your-mib-file> would be TintriMIB.txt)
+4.1. If for some reason your environment doesn't have access to Internet (and hence cannot connect to
+     http://mibs.thola.io/asn1/@mib@) you could simply use all the original MIB files we store in the
+     splunk-connect-for-snmp-mib-server project under the folder $ROOT_PROJECT/mibs/asn1. Something like this
+     would work as well (assuming on extracted "splunk-connect-for-snmp-mib-server" project under
+     ""$HOME/PycharmProjects/splunk-connect-for-snmp-mib-server").
+     mibdump.py --mib-source "$HOME/PycharmProjects/splunk-connect-for-snmp-mib-server/mibs/asn1" \
+                --mib-source . --destination-format pysnmp --destination-directory=./temp TintriMIB.txt
+
+5. Copy <your-mib-file> to $ROOT_PROJECT/mibs/asn1. Before copying it you need to be sure the file name
+   is correct:
+   - open <your-mib-file> with a text editor
+   - check the name reported into the first line, for example for TintriMIB.txt we have:
+     (venv) lstoppa@C02DL3AAMD6R add_new_mib % head -1 TintriMIB.txt
+     VMSTORE-MIB DEFINITIONS ::= BEGIN
+   - <your-mib-name> must be renamed as the name reported before the "DEFINITION" keyword.
+   - now you can copy <your-possibly-renamed-mib-name> to $ROOT_PROJECT/mibs/asn1
+
+6. Copy all the .py files from the ./temp dir to $PROJECT_ROOT/mibs/pysnmp
+   - note that mibdump.py correctly create a file using the name specified in the
+     "DEFINITION" section, so you don't need to rename any of the .py files created by
+     mibdump.py.
+
+Optional:
+7. Add <your-possibly-renamed-mib-name> to tests/lookups/mibs_list.csv
+8. Add a sample translation to test_translation.py::test_more_mib_files() and check that
+   everything looks good when running from $ROOT_PROJECT:
+   poetry run pytest
