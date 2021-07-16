@@ -91,7 +91,6 @@ class TranslatorTest(TestCase):
                 "mib": {"database": "files", "collection": "mib_files"},
             },
         }
-        #server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
         self.my_translator = Translator(server_config)
 
     @mongomock.patch()
@@ -267,7 +266,7 @@ class TranslatorTest(TestCase):
             "sc4snmp.IF-MIB.ifPhysAddress_2",
             "sc4snmp.SNMPv2-MIB.sysORID_7",
             "sc4snmp.TCP-MIB.tcpConnRemAddress_195_218_254_105_51684_194_67_10_226_22",
-            "sc4snmp.1_3_6_1_2_1_25_3_2_1_6_1025",
+            "sc4snmp.HOST-RESOURCES-MIB.hrDeviceErrors_1025",
             "sc4snmp.IF-MIB.ifHighSpeed_2",
             "sc4snmp.SNMPv2-MIB.sysUpTime_0",
             "sc4snmp.1_3_6_1_4_1_2021_10_1_6_1",
@@ -303,10 +302,16 @@ class TranslatorTest(TestCase):
                 "val": "sample",
                 "val_type": "DisplayString",
             },
+            {
+                "oid": "1.3.6.1.2.1.25.1.6",
+                "val": "165",
+                "val_type": "Gauge32",
+            },
         ]
         expected_values = [
             "sc4snmp.VMSTORE-MIB.mirrorLatency",
             "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
+            "sc4snmp.HOST-RESOURCES-MIB.hrSystemProcesses",
         ]
 
         for i in range(0, len(input_var_binds)):
@@ -314,4 +319,5 @@ class TranslatorTest(TestCase):
                 input_var_binds[i]
             )
             translated_dict = json.loads(translated_metrics)
+            # logger.info(translated_dict)
             assert translated_dict["metric_name"] == expected_values[i]
