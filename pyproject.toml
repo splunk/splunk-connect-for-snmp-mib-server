@@ -41,3 +41,7 @@ sc4snmp-mib-server = "splunk_connect_for_snmp_mib_server.snmp_mib_server:main"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+
