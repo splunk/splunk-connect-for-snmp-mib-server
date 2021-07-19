@@ -60,7 +60,7 @@ def main():
     logger.info("Completed Argument parsing")
 
     with open(config_file, "r") as yamlfile:
-        server_config = yaml.safe_load(yamlfile, Loader=yaml.FullLoader)
+        server_config = yaml.safe_load(yamlfile)
 
     upload_mibs(server_config)
     mib_server = MibServer(args, server_config)
