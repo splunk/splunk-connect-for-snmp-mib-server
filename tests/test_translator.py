@@ -268,7 +268,7 @@ class TranslatorTest(TestCase):
             "sc4snmp.IF-MIB.ifPhysAddress_2",
             "sc4snmp.SNMPv2-MIB.sysORID_7",
             "sc4snmp.TCP-MIB.tcpConnRemAddress_195_218_254_105_51684_194_67_10_226_22",
-            "sc4snmp.NETSERVER-MIB.hrDeviceErrors_1025",
+            "sc4snmp.HOST-RESOURCES-MIB.hrDeviceErrors_1025",
             "sc4snmp.IF-MIB.ifHighSpeed_2",
             "sc4snmp.SNMPv2-MIB.sysUpTime_0",
             "sc4snmp.1_3_6_1_4_1_2021_10_1_6_1",
@@ -313,7 +313,7 @@ class TranslatorTest(TestCase):
         expected_values = [
             "sc4snmp.VMSTORE-MIB.mirrorLatency",
             "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
-            "sc4snmp.NETSERVER-MIB.hrSystemProcesses_0",
+            "sc4snmp.HOST-RESOURCES-MIB.hrSystemProcesses_0",
         ]
 
         for i in range(0, len(input_var_binds)):

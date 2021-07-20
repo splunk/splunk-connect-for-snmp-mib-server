@@ -48,9 +48,12 @@ class MibsRepository:
                     )
 
     def search_oid(self, oid):
-        data = self._mibs.find_one({"content": {"$regex": oid}})
+        data = self._mibs.find({"content": {"$regex": oid}})
         if data:
-            return data["filename"]
+            mib_list = []
+            for item in data:
+                mib_list.append(item["filename"])
+            return mib_list
         else:
             return None
 
