@@ -134,15 +134,15 @@ class Translator:
     # Find mib module based on the oid
     def find_mib_file(self, oid, remove_index=False):
         value_tuple = str(oid).replace(".", ", ")
-        mib_name = None
+        mib_list = None
 
         try:
-            mib_name = self._mongo_mibs_coll.search_oid(value_tuple)
+            mib_list = self._mongo_mibs_coll.search_oid(value_tuple)
         except Exception as e:
             logger.error(
                 f"Error happened during search the oid in mongo mibs collection: {e}"
             )
-        if not mib_name:
+        if not mib_list:
             logger.warning(
                 f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
             )
@@ -167,10 +167,11 @@ class Translator:
                 logger.debug(f"[-] oid_without_index: {oid_without_index}")
                 self.find_mib_file(oid_without_index, remove_index=True)
             return
-        mib_name = mib_name[:-3]
-        logger.debug(f"mib_name: {mib_name}")
-        # load the mib module
-        self.load_extra_mib(mib_name, oid)
+        for mib_name in mib_list:
+            mib_name = mib_name[:-3]
+            logger.debug(f"mib_name: {mib_name}")
+            # load the mib module
+            self.load_extra_mib(mib_name, oid)
         
             
     # Load additional mib module
