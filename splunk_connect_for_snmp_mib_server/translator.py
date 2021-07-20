@@ -221,18 +221,23 @@ class Translator:
                 rfc1902.ObjectIdentity(name), val
             ).resolveWithMib(self._mib_view_controller)
         except Exception as e:
-            logger.error(f"Error happened in translation: {e} trying to lazy load MIBs")
-            self.find_mib_file(name)
-            try:
-                translated_var_bind = rfc1902.ObjectType(
-                    rfc1902.ObjectIdentity(name), val
-                ).resolveWithMib(self._mib_view_controller)
-                logger.debug(
-                    f"* Re-Translated PDU: {translated_var_bind.prettyPrint()}"
-                )
+            logger.error(f"Error happened in translation: {e}")
+            if "not OBJECT-TYPE" in str(e):
+                logger.info("[-] Trying to lazy load MIBs")              
+                self.find_mib_file(name)
+                try:
+                    translated_var_bind = rfc1902.ObjectType(
+                        rfc1902.ObjectIdentity(name), val
+                    ).resolveWithMib(self._mib_view_controller)
+                    logger.debug(
+                        f"* Re-Translated PDU: {translated_var_bind.prettyPrint()}"
+                    )
+                    return translated_var_bind.prettyPrint().replace(" = ", "=")
 
-            except Exception as e:
-                logger.debug(f"Error happened during translation checking: {e}")
+                except Exception as e:
+                    logger.debug(f"Error happened during translation checking: {e}")
+                    return None
+            else:
                 return None
 
         return translated_var_bind.prettyPrint().replace(" = ", "=")
