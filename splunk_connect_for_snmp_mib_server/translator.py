@@ -132,7 +132,7 @@ class Translator:
             )
 
     # Find mib module based on the oid
-    def find_mib_file(self, oid):
+    def find_mib_file(self, oid, remove_index=False):
         value_tuple = str(oid).replace(".", ", ")
         mib_name = None
 
@@ -146,7 +146,7 @@ class Translator:
             logger.warning(
                 f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
             )
-            logger.debug(f"Writing the oid-{oid} into mongo")
+            logger.debug(f"Writing the no_mapping_mib_oid-{oid} into mongo")
             try:
                 self._mongo_oids_coll.add_oid(str(oid))
                 logger.debug(
@@ -156,12 +156,23 @@ class Translator:
                 logger.error(
                     f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
                 )
+            # Find mib module for OID without index (remove the last part of OID)
+            # Handle the scenario that tries to translate an OID which has index append at the end.
+            # e.g 1.3.6.1.2.1.25.1.6.0, where 0 is index and it's not part of the OID object
+            # So we cannot find mapping MIBs for it
+            # Instead, 1.3.6.1.2.1.25.1.6 is actually the OID that needed to be used for searching MIBs
+            # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
+            if not remove_index:
+                oid_without_index = ".".join(oid.split(".")[:-1])
+                logger.debug(f"[-] oid_without_index: {oid_without_index}")
+                self.find_mib_file(oid_without_index, remove_index=True)
             return
         mib_name = mib_name[:-3]
         logger.debug(f"mib_name: {mib_name}")
         # load the mib module
         self.load_extra_mib(mib_name, oid)
-
+        
+            
     # Load additional mib module
     def load_extra_mib(self, mib_module, oid):
         try:
@@ -210,8 +221,8 @@ class Translator:
             ).resolveWithMib(self._mib_view_controller)
         except Exception as e:
             logger.error(f"Error happened in translation: {e} trying to lazy load MIBs")
+            self.find_mib_file(name)
             try:
-                self.find_mib_file(name)
                 translated_var_bind = rfc1902.ObjectType(
                     rfc1902.ObjectIdentity(name), val
                 ).resolveWithMib(self._mib_view_controller)

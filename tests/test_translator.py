@@ -305,7 +305,7 @@ class TranslatorTest(TestCase):
                 "val_type": "DisplayString",
             },
             {
-                "oid": "1.3.6.1.2.1.25.1.6",
+                "oid": "1.3.6.1.2.1.25.1.6.0",
                 "val": "165",
                 "val_type": "Gauge32",
             },
@@ -313,7 +313,7 @@ class TranslatorTest(TestCase):
         expected_values = [
             "sc4snmp.VMSTORE-MIB.mirrorLatency",
             "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
-            "sc4snmp.NETSERVER-MIB.hrSystemProcesses",
+            "sc4snmp.NETSERVER-MIB.hrSystemProcesses_0",
         ]
 
         for i in range(0, len(input_var_binds)):
