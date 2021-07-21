@@ -13,15 +13,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-from pysnmp.smi import builder, view, compiler, rfc1902
-import os
-import json
 import csv
+import json
 import logging
-
-from splunk_connect_for_snmp_mib_server.mongo import OidsRepository, MibsRepository
+import os
 
 from pysmi import debug as pysmi_debug
+from pysnmp.smi import builder, compiler, rfc1902, view
+from splunk_connect_for_snmp_mib_server.mongo import (
+    MibsRepository,
+    OidsRepository,
+)
 
 pysmi_debug.setLogger(pysmi_debug.Debug("compiler"))
 
@@ -172,8 +174,7 @@ class Translator:
             logger.debug(f"mib_name: {mib_name}")
             # load the mib module
             self.load_extra_mib(mib_name, oid)
-        
-            
+
     # Load additional mib module
     def load_extra_mib(self, mib_module, oid):
         try:
@@ -223,7 +224,7 @@ class Translator:
         except Exception as e:
             logger.error(f"Error happened in translation: {e}")
             if "not OBJECT-TYPE" in str(e):
-                logger.info("[-] Trying to lazy load MIBs")              
+                logger.info("[-] Trying to lazy load MIBs")
                 self.find_mib_file(name)
                 try:
                     translated_var_bind = rfc1902.ObjectType(
@@ -286,7 +287,7 @@ class Translator:
                 custom_translated_value = self.custom_translator(value)
 
             offset += 1
-            original_oid = '{oid}="{value}"'.format(offset=offset, oid=oid, value=value)
+            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
@@ -302,7 +303,6 @@ class Translator:
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
-                        offset=offset,
                         custom_translated_oid=custom_translated_oid,
                         custom_translated_value=custom_translated_value,
                     )
@@ -330,7 +330,7 @@ class Translator:
             trap_event_string += "\n"
 
         trap_event_string = trap_event_string.rstrip("\n")  # remove trailing newline
-        logger.debug(f"--- Trap Event String ---")
+        logger.debug("--- Trap Event String ---")
         logger.debug(trap_event_string)
         return trap_event_string
 

@@ -20,6 +20,7 @@ import pymongo
 
 logger = logging.getLogger(__name__)
 
+
 class MongoRepository:
     def __init__(self, mongo_config):
         self._client = pymongo.MongoClient(

@@ -13,17 +13,22 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import json
+import logging
+import os
 from unittest import TestCase, mock
 
 import mongomock
-import yaml
-
-from splunk_connect_for_snmp_mib_server.translator import Translator
+from pysnmp.hlapi import (
+    CommunityData,
+    ContextData,
+    SnmpEngine,
+    UdpTransportTarget,
+    getCmd,
+)
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
-import os
-import logging
-import json
-from pysnmp.hlapi import *
+from splunk_connect_for_snmp_mib_server.translator import Translator
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +151,7 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
+            current = f'oid-type{i+1}="{oid_type}" value{i+1}-type="{value_type}" {oid}="{value}" value{i+1}="{value}"'
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
