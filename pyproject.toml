@@ -28,6 +28,7 @@ requests = "^2.25.1"
 PyYAML = "^5.4.1"
 Flask = "^1.1.2"
 Flask-AutoIndex = "^0.6.6"
+types-PyYAML = "^5.4.3"
 
 [tool.poetry.dev-dependencies]
 mongomock = "^3.22.1"
