@@ -13,15 +13,17 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-from pysnmp.smi import builder, view, compiler, rfc1902
-import os
-import json
 import csv
+import json
 import logging
-
-from splunk_connect_for_snmp_mib_server.mongo import OidsRepository, MibsRepository
+import os
 
 from pysmi import debug as pysmi_debug
+from pysnmp.smi import builder, compiler, rfc1902, view
+from splunk_connect_for_snmp_mib_server.mongo import (
+    MibsRepository,
+    OidsRepository,
+)
 
 pysmi_debug.setLogger(pysmi_debug.Debug("compiler"))
 
@@ -132,21 +134,21 @@ class Translator:
             )
 
     # Find mib module based on the oid
-    def find_mib_file(self, oid):
+    def find_mib_file(self, oid, remove_index=False):
         value_tuple = str(oid).replace(".", ", ")
-        mib_name = None
+        mib_list = None
 
         try:
-            mib_name = self._mongo_mibs_coll.search_oid(value_tuple)
+            mib_list = self._mongo_mibs_coll.search_oid(value_tuple)
         except Exception as e:
             logger.error(
                 f"Error happened during search the oid in mongo mibs collection: {e}"
             )
-        if not mib_name:
+        if not mib_list:
             logger.warning(
                 f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
             )
-            logger.debug(f"Writing the oid-{oid} into mongo")
+            logger.debug(f"Writing the no_mapping_mib_oid-{oid} into mongo")
             try:
                 self._mongo_oids_coll.add_oid(str(oid))
                 logger.debug(
@@ -156,11 +158,22 @@ class Translator:
                 logger.error(
                     f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
                 )
+            # Find mib module for OID without index (remove the last part of OID)
+            # Handle the scenario that tries to translate an OID which has index append at the end.
+            # e.g 1.3.6.1.2.1.25.1.6.0, where 0 is index and it's not part of the OID object
+            # So we cannot find mapping MIBs for it
+            # Instead, 1.3.6.1.2.1.25.1.6 is actually the OID that needed to be used for searching MIBs
+            # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
+            if not remove_index:
+                oid_without_index = ".".join(oid.split(".")[:-1])
+                logger.debug(f"[-] oid_without_index: {oid_without_index}")
+                self.find_mib_file(oid_without_index, remove_index=True)
             return
-        mib_name = mib_name[:-3]
-        logger.debug(f"mib_name: {mib_name}")
-        # load the mib module
-        self.load_extra_mib(mib_name, oid)
+        for mib_name in mib_list:
+            mib_name = mib_name[:-3]
+            logger.debug(f"mib_name: {mib_name}")
+            # load the mib module
+            self.load_extra_mib(mib_name, oid)
 
     # Load additional mib module
     def load_extra_mib(self, mib_module, oid):
@@ -202,56 +215,33 @@ class Translator:
 
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
-        # Run var-binds through MIB resolver
         try:
             name = var_bind["oid"]
             val = var_bind["val"]
             translated_var_bind = rfc1902.ObjectType(
                 rfc1902.ObjectIdentity(name), val
             ).resolveWithMib(self._mib_view_controller)
-
-            logger.debug(f"* Translated PDU: {translated_var_bind.prettyPrint()}")
-            trans_string = translated_var_bind.prettyPrint().replace(" = ", "=")
-            trans_oid = trans_string.split("=")[0]
-            trans_val = trans_string.split("=")[1]
-            untranslated_val_type = var_bind["val_type"]
-
-            try:
-                # Check if oid exists in mongo oids collection and if oid was translated properly
-                no_mapping_mib_oid = self.check_mongo(name)
-                logger.debug(f"no_mapping_mib_oid: {no_mapping_mib_oid}")
-                if not no_mapping_mib_oid and self.is_not_translated(name, trans_oid):
-                    self.find_mib_file(name)
-
-                # Check if value exists in mongo oids collection and if value was translated properly when value is OID type
-                if (
-                    untranslated_val_type == "ObjectIdentifier"
-                    or untranslated_val_type == "ObjectIdentity"
-                ):
-                    no_mapping_mib_val = self.check_mongo(val)
-                    logger.debug(f"no_mapping_mib_val: {no_mapping_mib_val}")
-                    if not no_mapping_mib_val and self.is_not_translated(
-                        val, trans_val
-                    ):
-                        self.find_mib_file(val)
-
-                # Re-translated with the extra mibs
-                translated_var_bind = rfc1902.ObjectType(
-                    rfc1902.ObjectIdentity(name), val
-                ).resolveWithMib(self._mib_view_controller)
-                logger.debug(
-                    f"* Re-Translated PDU: {translated_var_bind.prettyPrint()}"
-                )
-
-            except Exception as e:
-                logger.debug(f"Error happened during translation checking: {e}")
-                pass
-
-            return translated_var_bind.prettyPrint().replace(" = ", "=")
         except Exception as e:
             logger.error(f"Error happened in translation: {e}")
-        finally:
-            pass
+            if "not OBJECT-TYPE" in str(e):
+                logger.info("[-] Trying to lazy load MIBs")
+                self.find_mib_file(name)
+                try:
+                    translated_var_bind = rfc1902.ObjectType(
+                        rfc1902.ObjectIdentity(name), val
+                    ).resolveWithMib(self._mib_view_controller)
+                    logger.debug(
+                        f"* Re-Translated PDU: {translated_var_bind.prettyPrint()}"
+                    )
+                    return translated_var_bind.prettyPrint().replace(" = ", "=")
+
+                except Exception as e:
+                    logger.debug(f"Error happened during translation checking: {e}")
+                    return None
+            else:
+                return None
+
+        return translated_var_bind.prettyPrint().replace(" = ", "=")
 
     # Translate SNMP PDU varBinds into MIB objects using custom translation table
     def custom_translator(self, oid):
@@ -297,7 +287,7 @@ class Translator:
                 custom_translated_value = self.custom_translator(value)
 
             offset += 1
-            original_oid = '{oid}="{value}"'.format(offset=offset, oid=oid, value=value)
+            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
@@ -313,7 +303,6 @@ class Translator:
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
-                        offset=offset,
                         custom_translated_oid=custom_translated_oid,
                         custom_translated_value=custom_translated_value,
                     )
@@ -341,7 +330,7 @@ class Translator:
             trap_event_string += "\n"
 
         trap_event_string = trap_event_string.rstrip("\n")  # remove trailing newline
-        logger.debug(f"--- Trap Event String ---")
+        logger.debug("--- Trap Event String ---")
         logger.debug(trap_event_string)
         return trap_event_string
 

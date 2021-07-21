@@ -13,14 +13,15 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-import pymongo
-import os
 import logging
+import os
+
+import pymongo
 
 logger = logging.getLogger(__name__)
 
 
-class MibsRepository:
+class MongoRepository:
     def __init__(self, mongo_config):
         self._client = pymongo.MongoClient(
             os.environ["MONGO_SERVICE_SERVICE_HOST"],
@@ -32,6 +33,11 @@ class MibsRepository:
                 os.environ["MONGO_PASS"],
                 mechanism="SCRAM-SHA-1",
             )
+
+
+class MibsRepository(MongoRepository):
+    def __init__(self, mongo_config):
+        super().__init__(mongo_config)
         self._mibs = self._client[mongo_config["database"]][mongo_config["collection"]]
 
     def upload_files(self, mib_files_dir):
@@ -48,9 +54,12 @@ class MibsRepository:
                     )
 
     def search_oid(self, oid):
-        data = self._mibs.find_one({"content": {"$regex": oid}})
+        data = self._mibs.find({"content": {"$regex": oid}})
         if data:
-            return data["filename"]
+            mib_list = []
+            for item in data:
+                mib_list.append(item["filename"])
+            return mib_list
         else:
             return None
 
@@ -58,21 +67,12 @@ class MibsRepository:
         self._mibs.delete_many({"filename": {"$regex": filename}})
 
     def clear(self):
-        self._mibs.remove()
+        self._mibs.delete_many({})
 
 
-class OidsRepository:
+class OidsRepository(MongoRepository):
     def __init__(self, mongo_config):
-        self._client = pymongo.MongoClient(
-            os.environ["MONGO_SERVICE_SERVICE_HOST"],
-            int(os.environ["MONGO_SERVICE_SERVICE_PORT"]),
-        )
-        if os.environ.get("MONGO_USER"):
-            self._client.admin.authenticate(
-                os.environ["MONGO_USER"],
-                os.environ["MONGO_PASS"],
-                mechanism="SCRAM-SHA-1",
-            )
+        super().__init__(mongo_config)
         self._oids = self._client[mongo_config["database"]][mongo_config["collection"]]
 
     def contains_oid(self, oid):
