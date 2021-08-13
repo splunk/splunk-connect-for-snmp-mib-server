@@ -13,6 +13,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import json
+
 from flask import Flask, request
 from flask_autoindex import AutoIndex
 from splunk_connect_for_snmp_mib_server.translator import Translator
@@ -50,15 +52,25 @@ class MibServer:
             logger.debug(request.json)
             var_binds = request.json.get("var_binds")
             metric = request.args.get("metric")
+            return_multimetric = request.args.get("return_multimetric")
             logger.debug(f"type of var_binds: {type(var_binds)}")
             logger.debug(f"var_binds: {var_binds}")
+            logger.debug(f"return_multimetric: {return_multimetric}")
             logger.debug(f"type of metric: {str(metric)} -- metric: {metric}")
             if metric == "True":
                 # if metric is true, var_binds has just one element
                 var_bind = var_binds[0]
-                result = self._translator.format_metric_data(var_bind)
+                result = json.dumps(self._translator.format_metric_data(var_bind))
             else:
-                result = self._translator.format_trap_event(var_binds)
+                if return_multimetric == "True":
+                    logger.debug(f"inside return_multimetric")
+                    result_dict = self._translator.format_metric_data(var_binds[0])
+                    result_string = self._translator.format_trap_event(var_binds)
+                    logger.debug(f"meric: {result_dict}  non_metric {result_string}")
+                    result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
+                              'non_metric': result_string}
+                else:
+                    result = self._translator.format_trap_event(var_binds)
             return result
 
         return app

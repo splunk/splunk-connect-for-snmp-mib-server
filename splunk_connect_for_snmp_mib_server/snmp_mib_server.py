@@ -40,7 +40,7 @@ def main():
     parser.add_argument(
         "-l",
         "--loglevel",
-        default="info",
+        default="debug",
         help="Provide logging level. Example --loglevel debug, default=warning",
     )
     parser.add_argument(
@@ -49,7 +49,7 @@ def main():
     parser.add_argument(
         "--hec_threads", default=10, help="Max http worker thread count", type=int
     )
-    parser.add_argument("-c", "--config", default="config.yaml", help="Config File")
+    parser.add_argument("-c", "--config", default="../config.yaml", help="Config File")
     args = parser.parse_args()
     log_level = args.loglevel.upper()
     config_file = args.config
