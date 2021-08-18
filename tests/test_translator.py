@@ -198,8 +198,7 @@ class TranslatorTest(TestCase):
             "val": "123",
             "val_type": "TimeTicks",
         }
-        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
-        translated_dict = json.loads(translated_metrics)
+        translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
         assert translated_dict["metric_name"] == "sc4snmp.SNMPv2-MIB.sysUpTime_0"
@@ -213,8 +212,7 @@ class TranslatorTest(TestCase):
             "val": "123",
             "val_type": "TimeTicks",
         }
-        translated_metrics = self.my_translator.format_metric_data(input_var_binds)
-        translated_dict = json.loads(translated_metrics)
+        translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
         assert translated_dict["_value"] == input_var_binds["val"]
@@ -287,8 +285,7 @@ class TranslatorTest(TestCase):
             translated_metrics = self.my_translator.format_metric_data(
                 input_var_binds_colons
             )
-            json_metrics = json.loads(translated_metrics)
-            assert json_metrics["metric_name"] == expected_translations[index]
+            assert translated_metrics["metric_name"] == expected_translations[index]
 
     @mongomock.patch()
     def test_more_mib_files(self):
@@ -310,8 +307,7 @@ class TranslatorTest(TestCase):
         ]
 
         for i in range(0, len(input_var_binds)):
-            translated_metrics = self.my_translator.format_metric_data(
+            translated_dict = self.my_translator.format_metric_data(
                 input_var_binds[i]
             )
-            translated_dict = json.loads(translated_metrics)
             assert translated_dict["metric_name"] == expected_values[i]
