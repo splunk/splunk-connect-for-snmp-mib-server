@@ -65,15 +65,31 @@ class MibServer:
                 # when 'return_multimetric' variable is set up as 'True', mib server should return both metric and
                 # non-metric representation of the result
                 if return_multimetric == "True":
-                    result_dict = self._translator.format_metric_data(var_binds[0])
-                    result_string = self._translator.format_trap_event(var_binds)
-                    result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
-                              'non_metric': result_string}
+                    return self._return_multimetric_data(var_binds)
                 else:
                     result = self._translator.format_trap_event(var_binds)
             return result
 
         return app
+
+    def _return_multimetric_data(self, varbinds: list) -> dict:
+        """
+        If field 'return_multimetric' was set to 'True', mib_server returns dictionary containing metric structure,
+        non-metric structure and metric name. For example:
+
+        {'metric_name': 'sc4snmp.IF-MIB.ifDescr_1',
+        'metric': '{"metric_name": "sc4snmp.IF-MIB.ifDescr_1", "_value": "lo", "metric_type": "OctetString"}',
+        'non_metric': 'oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.2.1="lo"
+        value1="lo" IF-MIB::ifDescr.1="lo" '}
+
+        :param varbinds: list of varbinds
+        :return: dictionary of the above structure
+        """
+        result_dict = self._translator.format_metric_data(varbinds[0])
+        result_string = self._translator.format_trap_event(varbinds)
+        result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
+                  'non_metric': result_string}
+        return result
 
     def run_mib_server(self):
         # poetry run fails when debug=True
