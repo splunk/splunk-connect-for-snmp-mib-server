@@ -261,7 +261,6 @@ class Translator:
     def get_custom_translation_table(self):
         translation_table = {}
         logger.debug(f"cwd {os.getcwd()}")
-        os.chdir('..')
         file_path = os.path.join(os.getcwd(), "lookups/custom_mib_string_table.csv")
         logger.debug(f"file_path {file_path}")
         with open(file_path) as files:

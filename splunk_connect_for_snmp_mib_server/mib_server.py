@@ -62,11 +62,11 @@ class MibServer:
                 var_bind = var_binds[0]
                 result = json.dumps(self._translator.format_metric_data(var_bind))
             else:
+                # when 'return_multimetric' variable is set up as 'True', mib server should return both metric and
+                # non-metric representation of the result
                 if return_multimetric == "True":
-                    logger.debug(f"inside return_multimetric")
                     result_dict = self._translator.format_metric_data(var_binds[0])
                     result_string = self._translator.format_trap_event(var_binds)
-                    logger.debug(f"meric: {result_dict}  non_metric {result_string}")
                     result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
                               'non_metric': result_string}
                 else:
