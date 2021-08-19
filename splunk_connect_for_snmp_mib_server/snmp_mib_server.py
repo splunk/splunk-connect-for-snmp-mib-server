@@ -14,10 +14,11 @@
 #    limitations under the License.
 #   ########################################################################
 import argparse
-import yaml
-from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
-from splunk_connect_for_snmp_mib_server.mib_server import MibServer
 import logging
+
+import yaml
+from splunk_connect_for_snmp_mib_server.mib_server import MibServer
+from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ def upload_mibs(server_config):
 
 
 def main():
-    logger.info(f"Startup Config")
+    logger.info("Startup Config")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-l",
@@ -60,7 +61,7 @@ def main():
     logger.info("Completed Argument parsing")
 
     with open(config_file, "r") as yamlfile:
-        server_config = yaml.load(yamlfile, Loader=yaml.FullLoader)
+        server_config = yaml.safe_load(yamlfile)
 
     upload_mibs(server_config)
     mib_server = MibServer(args, server_config)

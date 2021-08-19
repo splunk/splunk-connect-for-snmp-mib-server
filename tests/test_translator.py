@@ -13,14 +13,22 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import json
+import logging
+import os
 from unittest import TestCase, mock
 
 import mongomock
-
+from pysnmp.hlapi import (
+    CommunityData,
+    ContextData,
+    SnmpEngine,
+    UdpTransportTarget,
+    getCmd,
+)
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
+from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
 from splunk_connect_for_snmp_mib_server.translator import Translator
-import os
-import logging
-from pysnmp.hlapi import *
 
 logger = logging.getLogger(__name__)
 
@@ -79,9 +87,9 @@ class TranslatorTest(TestCase):
         server_config = {
             "snmp": {
                 "mibs": {
-                    "dir": "mibs/pysnmp",
+                    "dir": "./mibs/pysnmp",
                     "load_list": "lookups/mibs_list.csv",
-                    "mibs_path": "mibs",
+                    "mibs_path": "./mibs",
                 }
             },
             "mongo": {
@@ -91,6 +99,7 @@ class TranslatorTest(TestCase):
         }
         # server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
         self.my_translator = Translator(server_config)
+        upload_mibs(server_config)
 
     @mongomock.patch()
     def test_format_trap(self):
@@ -143,7 +152,7 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
+            current = f'oid-type{i+1}="{oid_type}" value{i+1}-type="{value_type}" {oid}="{value}" value{i+1}="{value}"'
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
@@ -269,7 +278,7 @@ class TranslatorTest(TestCase):
             "sc4snmp.IF-MIB.ifPhysAddress_2",
             "sc4snmp.SNMPv2-MIB.sysORID_7",
             "sc4snmp.TCP-MIB.tcpConnRemAddress_195_218_254_105_51684_194_67_10_226_22",
-            "sc4snmp.1_3_6_1_2_1_25_3_2_1_6_1025",
+            "sc4snmp.HOST-RESOURCES-MIB.hrDeviceErrors_1025",
             "sc4snmp.IF-MIB.ifHighSpeed_2",
             "sc4snmp.SNMPv2-MIB.sysUpTime_0",
             "sc4snmp.1_3_6_1_4_1_2021_10_1_6_1",
@@ -306,10 +315,16 @@ class TranslatorTest(TestCase):
                 "val": "sample",
                 "val_type": "DisplayString",
             },
+            {
+                "oid": "1.3.6.1.2.1.25.1.6.0",
+                "val": "165",
+                "val_type": "Gauge32",
+            },
         ]
         expected_values = [
             "sc4snmp.VMSTORE-MIB.mirrorLatency",
             "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
+            "sc4snmp.HOST-RESOURCES-MIB.hrSystemProcesses_0",
         ]
 
         for i in range(0, len(input_var_binds)):
