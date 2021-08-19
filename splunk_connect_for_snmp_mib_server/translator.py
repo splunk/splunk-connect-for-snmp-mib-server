@@ -271,7 +271,7 @@ class Translator:
         return translation_table
 
     # Format and translate the trap events
-    def format_trap_event(self, var_binds):
+    def format_text_event(self, var_binds: list):
         trap_event_string = ""
         offset = 0
 
@@ -346,11 +346,12 @@ class Translator:
         return trap_event_string
 
     # Format and translate the metric data
-    def format_metric_data(self, var_bind):
+    def format_metric_data(self, var_bind: list, index=0):
         """
         format one varBind object into metric format
         @param var_bind: single varBind object
         """
+        var_bind = var_bind[index]
         metric_data = {}
 
         oid = var_bind["oid"]
@@ -382,3 +383,22 @@ class Translator:
             metric_data["custom_metric_name"] = custom_translated_oid
         logger.debug(f"metric_data: {json.dumps(metric_data)}")
         return metric_data
+
+    def format_multimetric_data(self, varbinds: list) -> dict:
+        """
+        If field 'return_multimetric' was set to 'True', mib_server returns dictionary containing metric structure,
+        non-metric structure and metric name. For example:
+
+        {'metric_name': 'sc4snmp.IF-MIB.ifDescr_1',
+        'metric': '{"metric_name": "sc4snmp.IF-MIB.ifDescr_1", "_value": "lo", "metric_type": "OctetString"}',
+        'non_metric': 'oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.2.1="lo"
+        value1="lo" IF-MIB::ifDescr.1="lo" '}
+
+        :param varbinds: list of varbinds
+        :return: dictionary of the above structure
+        """
+        result_dict = self.format_metric_data(varbinds)
+        result_string = self.format_text_event(varbinds)
+        result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
+                  'non_metric': result_string}
+        return result

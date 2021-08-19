@@ -111,7 +111,7 @@ class TranslatorTest(TestCase):
             },
         ]
 
-        translated_var_binds = self.my_translator.format_trap_event(
+        translated_var_binds = self.my_translator.format_text_event(
             input_var_binds_list
         )
         assert len(translated_var_binds) > 0
@@ -135,7 +135,7 @@ class TranslatorTest(TestCase):
             },
         ]
 
-        translated_var_binds = self.my_translator.format_trap_event(
+        translated_var_binds = self.my_translator.format_text_event(
             input_var_binds_list
         )
 
@@ -186,38 +186,40 @@ class TranslatorTest(TestCase):
             },
         ]
 
-        translated_var_binds = self.my_translator.format_trap_event(
+        translated_var_binds = self.my_translator.format_text_event(
             input_var_binds_invalids
         )
         assert len(translated_var_binds) == 0
 
     @mongomock.patch()
     def test_format_metric(self):
-        input_var_binds = {
+        input_var_binds = [{
             "oid": "1.3.6.1.2.1.1.3.0",
             "val": "123",
             "val_type": "TimeTicks",
-        }
+        }]
         translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
         assert translated_dict["metric_name"] == "sc4snmp.SNMPv2-MIB.sysUpTime_0"
-        assert translated_dict["_value"] == input_var_binds["val"]
-        assert translated_dict["metric_type"] == input_var_binds["val_type"]
+        input_var_bind = input_var_binds[0]
+        assert translated_dict["_value"] == input_var_bind["val"]
+        assert translated_dict["metric_type"] == input_var_bind["val_type"]
 
     @mongomock.patch()
     def test_format_non_existing_metric(self):
-        input_var_binds = {
+        input_var_binds = [{
             "oid": "1.3.6666.16666.26666.16666.1.3.0",
             "val": "123",
             "val_type": "TimeTicks",
-        }
+        }]
         translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
-        assert translated_dict["_value"] == input_var_binds["val"]
-        assert translated_dict["metric_type"] == input_var_binds["val_type"]
-        untranslated_oid = input_var_binds["oid"].replace(".", "_")
+        input_var_bind = input_var_binds[0]
+        assert translated_dict["_value"] == input_var_bind["val"]
+        assert translated_dict["metric_type"] == input_var_bind["val_type"]
+        untranslated_oid = input_var_bind["oid"].replace(".", "_")
         assert translated_dict["metric_name"] == f"sc4snmp.{untranslated_oid}"
 
     @mongomock.patch()
@@ -277,11 +279,11 @@ class TranslatorTest(TestCase):
             and len(value_types) == len(expected_translations)
         )
         for index in range(0, len(oids)):
-            input_var_binds_colons = {
+            input_var_binds_colons = [{
                 "oid": oids[index],
                 "val": str_values[index],
                 "val_type": value_types[index],
-            }
+            }]
             translated_metrics = self.my_translator.format_metric_data(
                 input_var_binds_colons
             )
@@ -308,6 +310,6 @@ class TranslatorTest(TestCase):
 
         for i in range(0, len(input_var_binds)):
             translated_dict = self.my_translator.format_metric_data(
-                input_var_binds[i]
+                input_var_binds, i
             )
             assert translated_dict["metric_name"] == expected_values[i]
