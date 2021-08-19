@@ -349,7 +349,9 @@ class Translator:
     def format_metric_data(self, var_bind: list, index=0):
         """
         format one varBind object into metric format
-        @param var_bind: single varBind object
+        :param var_bind: varBind list, usually it contains only one element
+        :param index: index of the element we want to process
+        :return: translated data dictionary
         """
         var_bind = var_bind[index]
         metric_data = {}
@@ -376,7 +378,7 @@ class Translator:
         # .. if the metric name contains a . replace with _
         metric_data[
             "metric_name"
-        ] = f'sc4snmp.{translated_oid.replace(".","_").replace("::", ".")}'
+        ] = f'sc4snmp.{translated_oid.replace(".", "_").replace("::", ".")}'
         metric_data["_value"] = translated_val
         metric_data["metric_type"] = val_type
         if custom_translated_oid:
@@ -399,6 +401,9 @@ class Translator:
         """
         result_dict = self.format_metric_data(varbinds)
         result_string = self.format_text_event(varbinds)
-        result = {'metric_name': result_dict['metric_name'], 'metric': json.dumps(result_dict),
-                  'non_metric': result_string}
+        result = {
+            "metric_name": result_dict["metric_name"],
+            "metric": json.dumps(result_dict),
+            "non_metric": result_string,
+        }
         return result

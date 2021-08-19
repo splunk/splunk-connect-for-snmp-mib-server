@@ -13,7 +13,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-import json
 
 from flask import Flask, request
 from flask_autoindex import AutoIndex
@@ -24,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 
 class MibServer:
-
     def __init__(self, args, server_config):
         self._args = args
         self._server_config = server_config
@@ -33,7 +31,7 @@ class MibServer:
         self.data_format = {
             "METRIC": self._translator.format_metric_data,
             "TEXT": self._translator.format_text_event,
-            "MULTIMETRIC": self._translator.format_multimetric_data
+            "MULTIMETRIC": self._translator.format_multimetric_data,
         }
 
     def build_flask_app(self):

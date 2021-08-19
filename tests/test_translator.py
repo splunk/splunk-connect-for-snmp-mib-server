@@ -16,12 +16,10 @@
 from unittest import TestCase, mock
 
 import mongomock
-import yaml
 
 from splunk_connect_for_snmp_mib_server.translator import Translator
 import os
 import logging
-import json
 from pysnmp.hlapi import *
 
 logger = logging.getLogger(__name__)
@@ -91,7 +89,7 @@ class TranslatorTest(TestCase):
                 "mib": {"database": "files", "collection": "mib_files"},
             },
         }
-        #server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
+        # server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
         self.my_translator = Translator(server_config)
 
     @mongomock.patch()
@@ -193,11 +191,13 @@ class TranslatorTest(TestCase):
 
     @mongomock.patch()
     def test_format_metric(self):
-        input_var_binds = [{
-            "oid": "1.3.6.1.2.1.1.3.0",
-            "val": "123",
-            "val_type": "TimeTicks",
-        }]
+        input_var_binds = [
+            {
+                "oid": "1.3.6.1.2.1.1.3.0",
+                "val": "123",
+                "val_type": "TimeTicks",
+            }
+        ]
         translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
@@ -208,11 +208,13 @@ class TranslatorTest(TestCase):
 
     @mongomock.patch()
     def test_format_non_existing_metric(self):
-        input_var_binds = [{
-            "oid": "1.3.6666.16666.26666.16666.1.3.0",
-            "val": "123",
-            "val_type": "TimeTicks",
-        }]
+        input_var_binds = [
+            {
+                "oid": "1.3.6666.16666.26666.16666.1.3.0",
+                "val": "123",
+                "val_type": "TimeTicks",
+            }
+        ]
         translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
@@ -279,11 +281,13 @@ class TranslatorTest(TestCase):
             and len(value_types) == len(expected_translations)
         )
         for index in range(0, len(oids)):
-            input_var_binds_colons = [{
-                "oid": oids[index],
-                "val": str_values[index],
-                "val_type": value_types[index],
-            }]
+            input_var_binds_colons = [
+                {
+                    "oid": oids[index],
+                    "val": str_values[index],
+                    "val_type": value_types[index],
+                }
+            ]
             translated_metrics = self.my_translator.format_metric_data(
                 input_var_binds_colons
             )
@@ -309,7 +313,5 @@ class TranslatorTest(TestCase):
         ]
 
         for i in range(0, len(input_var_binds)):
-            translated_dict = self.my_translator.format_metric_data(
-                input_var_binds, i
-            )
+            translated_dict = self.my_translator.format_metric_data(input_var_binds, i)
             assert translated_dict["metric_name"] == expected_values[i]
