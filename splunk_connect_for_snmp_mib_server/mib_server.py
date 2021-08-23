@@ -13,6 +13,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+
 from flask import Flask, request
 from flask_autoindex import AutoIndex
 from splunk_connect_for_snmp_mib_server.translator import Translator
@@ -27,6 +28,11 @@ class MibServer:
         self._server_config = server_config
         self._translator = Translator(server_config)
         self._flask_app = self.build_flask_app()
+        self.data_format = {
+            "METRIC": self._translator.format_metric_data,
+            "TEXT": self._translator.format_text_event,
+            "MULTIMETRIC": self._translator.format_multimetric_data,
+        }
 
     def build_flask_app(self):
         app = Flask(__name__)
@@ -49,16 +55,15 @@ class MibServer:
         def translator():
             logger.debug(request.json)
             var_binds = request.json.get("var_binds")
-            metric = request.args.get("metric")
+            data_format = request.args.get("data_format")
             logger.debug(f"type of var_binds: {type(var_binds)}")
             logger.debug(f"var_binds: {var_binds}")
-            logger.debug(f"type of metric: {str(metric)} -- metric: {metric}")
-            if metric == "True":
-                # if metric is true, var_binds has just one element
-                var_bind = var_binds[0]
-                result = self._translator.format_metric_data(var_bind)
+            logger.debug(f"requested data format: {str(data_format)} ")
+            if data_format in self.data_format:
+                method = self.data_format.get(data_format)
+                result = method(var_binds)
             else:
-                result = self._translator.format_trap_event(var_binds)
+                result = self._translator.format_text_event(var_binds)
             return result
 
         return app
