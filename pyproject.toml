@@ -51,13 +51,15 @@ profile = "black"
 
 [[tool.mypy.overrides]]
 module = [
-    "celery.*",
     "pysnmp.*",
-    "schedule",
     "pysmi",
     "pymongo.*",
     "jsoncomment",
     "requests",
     "yaml",
+    "flask",
+    "flask_autoindex",
+    "mongomock"
+
 ]
 ignore_missing_imports = true

@@ -30,5 +30,7 @@ header:
     - "*.lock"
     - "mibs"
     - "**/*.csv"
+    - ".flake8"
+    - ".jscdp.json"
 
   comment: on-failure
