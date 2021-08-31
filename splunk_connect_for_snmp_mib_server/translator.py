@@ -20,10 +20,8 @@ import os
 
 from pysmi import debug as pysmi_debug
 from pysnmp.smi import builder, compiler, rfc1902, view
-from splunk_connect_for_snmp_mib_server.mongo import (
-    MibsRepository,
-    OidsRepository,
-)
+
+from splunk_connect_for_snmp_mib_server.mongo import MibsRepository, OidsRepository
 
 pysmi_debug.setLogger(pysmi_debug.Debug("compiler"))
 
@@ -335,7 +333,7 @@ class Translator:
         return trap_event_string
 
     # Format and translate the metric data
-    def format_metric_data(self, var_bind: list, index=0):
+    def format_metric_data(self, var_bind, index=0):
         """
         format one varBind object into metric format
         :param var_bind: varBind list, usually it contains only one element

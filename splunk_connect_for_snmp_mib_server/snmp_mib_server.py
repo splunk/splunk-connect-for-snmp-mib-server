@@ -17,6 +17,7 @@ import argparse
 import logging
 
 import yaml
+
 from splunk_connect_for_snmp_mib_server.mib_server import MibServer
 from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
 

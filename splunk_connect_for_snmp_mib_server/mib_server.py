@@ -14,10 +14,12 @@
 #    limitations under the License.
 #   ########################################################################
 
+import logging
+
 from flask import Flask, request
 from flask_autoindex import AutoIndex
+
 from splunk_connect_for_snmp_mib_server.translator import Translator
-import logging
 
 logger = logging.getLogger(__name__)
 

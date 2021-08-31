@@ -13,7 +13,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-import json
 import logging
 import os
 from unittest import TestCase, mock
@@ -27,6 +26,7 @@ from pysnmp.hlapi import (
     getCmd,
 )
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
+
 from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
 from splunk_connect_for_snmp_mib_server.translator import Translator
 

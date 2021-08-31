@@ -46,3 +46,18 @@ build-backend = "poetry.core.masonry.api"
 log_cli = true
 log_cli_level = "INFO"
 
+[tool.isort]
+profile = "black"
+
+[[tool.mypy.overrides]]
+module = [
+    "celery.*",
+    "pysnmp.*",
+    "schedule",
+    "pysmi",
+    "pymongo.*",
+    "jsoncomment",
+    "requests",
+    "yaml",
+]
+ignore_missing_imports = true
