@@ -44,12 +44,12 @@ class Translator:
         # Execute the 1st translation to force mibs to be ready to use
         self.first_mib_translation_trigger()
 
-    # build a oids collection in mongo
+    # build a oids collection in mongodb
     def build_oids_collection(self, oid_mongo_config):
         oids_collection = OidsRepository(oid_mongo_config)
         return oids_collection
 
-    # build a mibs collection in mongo
+    # build a mibs collection in mongodb
     def build_mibs_collection(self, mib_mongo_config):
         mibs_collection = MibsRepository(mib_mongo_config)
         return mibs_collection
