@@ -46,3 +46,20 @@ build-backend = "poetry.core.masonry.api"
 log_cli = true
 log_cli_level = "INFO"
 
+[tool.isort]
+profile = "black"
+
+[[tool.mypy.overrides]]
+module = [
+    "pysnmp.*",
+    "pysmi",
+    "pymongo.*",
+    "jsoncomment",
+    "requests",
+    "yaml",
+    "flask",
+    "flask_autoindex",
+    "mongomock"
+
+]
+ignore_missing_imports = true

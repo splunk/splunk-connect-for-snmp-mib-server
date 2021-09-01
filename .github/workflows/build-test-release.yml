@@ -25,8 +25,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: ort-action
-        uses: splunk/addonfactory-ort-action@v1.3
+        uses: splunk/addonfactory-ort-action@v1
         id: ort-action
+        with:
+          UsePython3: 3.8
       - name: ort-action-artifacts-reports
         uses: actions/upload-artifact@v2
         with:
@@ -100,6 +102,11 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
+          LINTER_RULES_PATH: /
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+          PYTHON_MYPY_CONFIG_FILE: pyproject.toml
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
+          JSCPD_CONFIG_FILE: .jscdp.json
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   review_secrets:
     name: security-detect-secrets
@@ -131,6 +138,8 @@ jobs:
         uses: snyk/actions/python-3.8@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
       # - name: Upload result to GitHub Code Scanning
       #   uses: github/codeql-action/upload-sarif@v1
       #   with:

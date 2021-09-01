@@ -16,8 +16,9 @@
 import sys
 
 sys.path.append("../")
-from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
-import os
+import os  # noqa: E402
+
+from splunk_connect_for_snmp_mib_server.mongo import MibsRepository  # noqa: E402
 
 
 def main():
