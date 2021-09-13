@@ -89,25 +89,13 @@ jobs:
           name: test-results-unit-python_${{ matrix.python-version }}
           path: test-results/*
 
-  lint:
+  pre-commit:
     runs-on: ubuntu-latest
-    name: Lint Code Base
     steps:
       - uses: actions/checkout@v2
-        with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
-          fetch-depth: 0
-      - name: Lint Code Base
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
-          LINTER_RULES_PATH: /
-          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
-          PYTHON_MYPY_CONFIG_FILE: pyproject.toml
-          PYTHON_FLAKE8_CONFIG_FILE: .flake8
-          JSCPD_CONFIG_FILE: .jscdp.json
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.3
+
   review_secrets:
     name: security-detect-secrets
     runs-on: ubuntu-latest
@@ -147,7 +135,7 @@ jobs:
   build:
     name: Build Release
     needs:
-      - lint
+      - pre-commit
       - test-unit
       - review_secrets
       - compliance-copyrights
