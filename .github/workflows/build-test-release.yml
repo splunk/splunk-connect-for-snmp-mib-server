@@ -68,9 +68,9 @@ jobs:
       - name: Install Poetry
         run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
       - name: Install Code
-        run: source $HOME/.poetry/env; poetry install
+        run: source "$HOME/.poetry/env"; poetry install
       - name: Run Pytest with coverage
-        run: source $HOME/.poetry/env; poetry run pytest --cov=./ --cov-report=xml --junitxml=test-results/junit.xml
+        run: source "$HOME/.poetry/env"; poetry run pytest --cov=./ --cov-report=xml --junitxml=test-results/junit.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -159,7 +159,7 @@ jobs:
       - name: Install Poetry
         run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
       - name: Install Code
-        run: source $HOME/.poetry/env; poetry build
+        run: source "$HOME/.poetry/env"; poetry build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
