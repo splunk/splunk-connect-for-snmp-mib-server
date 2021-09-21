@@ -24,9 +24,9 @@ license = "APACHE-2.0"
 python = "^3.8"
 pymongo = "^3.11.3"
 pysnmp = "^4.4.12"
-requests = "^2.25.1"
+requests = "^2.26.0"
 PyYAML = "^5.4.1"
-Flask = "^1.1.2"
+Flask = "^2.0.1"
 Flask-AutoIndex = "^0.6.6"
 
 [tool.poetry.dev-dependencies]
