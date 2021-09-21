@@ -1,0 +1,250 @@
+VERITAS-APPLIANCE-MONITORING-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+DisplayString, mib-2 FROM RFC1213-MIB
+enterprises, OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY FROM SNMPv2-SMI;
+
+
+applianceMonitoringMib MODULE-IDENTITY
+LAST-UPDATED "2016083000Z"
+ORGANIZATION "Veritas Technologies LLC"
+CONTACT-INFO "500 East Middlefield Road
+Mountain View, CA 94043 US
+Subject: appliance.mib"
+DESCRIPTION "The MIB module for Veritas Appliance Monitoring"
+
+REVISION "201609060000Z"
+DESCRIPTION "Changed symc strings to vrts."
+
+::= { products 9 }
+
+veritassoftware OBJECT IDENTIFIER ::= { enterprises 48328 }
+products OBJECT IDENTIFIER ::= { veritassoftware 3 }
+
+systems OBJECT IDENTIFIER ::= { applianceMonitoringMib 1 }
+software OBJECT IDENTIFIER ::= { applianceMonitoringMib 2 }
+
+-- system traps
+
+vrtssystemName OBJECT-TYPE
+SYNTAX DisplayString (SIZE(0..80))
+MAX-ACCESS read-only
+STATUS current
+DESCRIPTION "System Name"
+::= { systems 1 }
+
+vrtsfanTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps fan failures"
+::= { systems 3 }
+
+vrtspowerTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps power failures"
+::= { systems 4 }
+
+vrtsfibrechannelTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps FibreChannel failures"
+::= { systems 5 }
+
+vrtstemperatureTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps temperature failures"
+::= { systems 6 }
+
+vrtscpuTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps cpu failures"
+::= { systems 7 }
+
+vrtsdiskTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps disk failures"
+::= { systems 8 }
+
+vrtsraidgroupTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps raid failures"
+::= { systems 9 }
+
+
+vrtsenclosurefanTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps enclosure fan failures"
+::= { systems 10 }
+
+vrtsenclosurepowerTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps enclosure power failures"
+::= { systems 11 }
+
+vrtsenclosuretemperatureTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps enclosure temperature failures"
+::= { systems 12 }
+
+vrtsenclosurediskTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps enclosure disk failures"
+::= { systems 13 }
+
+vrtsadapterTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps adapter failures"
+::= { systems 14 }
+
+vrtsfirmwareTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps firmware failures"
+::= { systems 15 }
+
+vrtspciTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps pci failures"
+::= { systems 16 }
+
+vrtsnetworkcardTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps network card failures"
+::= { systems 17 }
+
+vrtsvolumeTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps volume failures"
+::= { systems 18 }
+
+vrtsbbuTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps BBU failures"
+::= { systems 19 }
+
+vrtsconnectionTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps connection failures"
+::= { systems 20 }
+
+vrtspartitionTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Partition alert traps"
+::= { systems 21 }
+
+vrtsstoragestatusTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps StorageArray HealthStatus failures"
+::= { systems 22 }
+
+vrtsdimmTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps Dimm failures"
+::= { systems 23 }
+
+vrtsiscsiTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps Iscsi failures"
+::= { systems 24 }
+
+vrtsethernetTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Traps Ethernet failures"
+::= { systems 25 }
+
+
+-- software traps
+
+vrtsfailedJobsTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Job failures Trap"
+::= { software 1 }
+
+vrtsprocessTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Processes stopped traps"
+::= { software 2 }
+
+vrtsdiskSpaceTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Low disk space traps"
+::= { software 3 }
+
+vrtssoftwareUpdateSuccessTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Software update success trap"
+::= { software 4 }
+
+vrtssoftwareUpdateFailedRollbackSuccessTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Software update failed but rollback was successful trap"
+::= { software 5 }
+
+vrtssoftwareUpdateFailedRollbackFailedTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Software update and rollback failed trap"
+::= { software 6 }
+
+vrtsrollbackSuccessTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Software rollback success trap"
+::= { software 7 }
+
+vrtsrollbackFailedTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Software rollback failed trap"
+::= { software 8 }
+
+vrtsclusterStateTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Cluster node failed trap"
+::= { software 9 }
+
+vrtsdiskPerfTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Disk performance alert trap"
+::= { software 10 }
+
+vrtscollectorserviceTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "Collector plugin loading failed trap"
+::= { software 11 }
+
+vrtsassetTagTrap NOTIFICATION-TYPE
+OBJECTS { vrtssystemName }
+STATUS current
+DESCRIPTION "AssetTag"
+::= { software 12 }
+
+END
