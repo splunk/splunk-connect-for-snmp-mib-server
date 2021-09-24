@@ -15,11 +15,12 @@
 #   ########################################################################
 import logging
 import os
-import yaml
 
+import yaml
 from yaml.parser import ParserError
 
 logger = logging.getLogger(__name__)
+
 
 def merge_profiles(directory, root_name):
     result = {}

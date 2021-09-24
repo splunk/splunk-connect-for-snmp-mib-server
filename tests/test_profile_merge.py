@@ -41,9 +41,9 @@ class ProfileLoaderTest(TestCase):
         assert "basev1l2" in merged_profiles.keys()
 
     def test_same_name_profiles_were_overwritten_in_alphabetical_order(self):
-        merged_profiles = merge_profiles("tests/profiles/same_name_profiles", "profiles")[
-            "profiles"
-        ]
+        merged_profiles = merge_profiles(
+            "tests/profiles/same_name_profiles", "profiles"
+        )["profiles"]
 
         assert len(merged_profiles.keys()) == 2
         assert "basev1" in merged_profiles.keys()
