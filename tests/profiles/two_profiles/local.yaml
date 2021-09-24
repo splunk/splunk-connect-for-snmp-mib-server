@@ -1,0 +1,42 @@
+# Copyright 2021 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+profiles:
+  basev2:
+    patterns:
+      - '*MY_DEFAULT_DEVICE_3*'
+    frequency: 60
+    varBinds:
+      # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+      - ['SNMPv2-MIB', 'sysDescr']
+      - ['SNMPv2-MIB', 'sysUpTime',0]
+      - ['SNMPv2-MIB', 'sysName']
+      - '1.3.6.1.2.1.2.*'
+  basev2l2:
+    patterns:
+      - '*MY_DEFAULT_DEVICE_3*'
+      - '*MY_DEFAULT_DEVICE_NAME_3*'
+    frequency: 120
+    varBinds:
+      # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+      - ['SNMPv2-MIB', 'sysDescr']
+      - ['SNMPv2-MIB', 'sysUpTime',0]
+      - ['SNMPv2-MIB', 'sysName']
+      - ['IF-MIB','ifHCInOctets']
+      - ['IF-MIB','ifHCOutOctets']
+      - ['IF-MIB','ifInErrors']
+      - ['IF-MIB','ifOutErrors']
+      - ['IF-MIB','ifInDiscards']
+      - ['IF-MIB','ifOutDiscards']

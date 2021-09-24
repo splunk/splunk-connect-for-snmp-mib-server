@@ -18,6 +18,7 @@ snmp:
     dir: "/work/mibs/pysnmp"
     load_list: "lookups/mibs_list.csv"
     mibs_path: "/work/mibs"
+    profiles_path: "/work/profiles"
 mongo:
   oid:
     database: "mib_server"
