@@ -39,16 +39,16 @@ logger = logging.getLogger(__name__)
 # process. This was the input data we use in our test "test_translate_all_snmp_simulator_data_types"
 def prepare_test_data():
     for oid in (
-            "1.3.6.1.2.1.2.2.1.4.1",
-            "1.3.6.1.2.1.1.6.0",
-            "1.3.6.1.2.1.2.2.1.6.2",
-            "1.3.6.1.2.1.1.9.1.2.7",
-            "1.3.6.1.2.1.6.13.1.4.195.218.254.105.51684.194.67.10.226.22",
-            "1.3.6.1.2.1.25.3.2.1.6.1025",
-            "1.3.6.1.2.1.31.1.1.1.15.2",
-            "1.3.6.1.2.1.1.3.0",
-            "1.3.6.1.4.1.2021.10.1.6.1",
-            "1.3.6.1.2.1.31.1.1.1.10.1",
+        "1.3.6.1.2.1.2.2.1.4.1",
+        "1.3.6.1.2.1.1.6.0",
+        "1.3.6.1.2.1.2.2.1.6.2",
+        "1.3.6.1.2.1.1.9.1.2.7",
+        "1.3.6.1.2.1.6.13.1.4.195.218.254.105.51684.194.67.10.226.22",
+        "1.3.6.1.2.1.25.3.2.1.6.1025",
+        "1.3.6.1.2.1.31.1.1.1.15.2",
+        "1.3.6.1.2.1.1.3.0",
+        "1.3.6.1.4.1.2021.10.1.6.1",
+        "1.3.6.1.2.1.31.1.1.1.10.1",
     ):
         g = getCmd(
             SnmpEngine(),
@@ -285,9 +285,9 @@ class TranslatorTest(TestCase):
             "sc4snmp.IF-MIB.ifHCOutOctets_1",
         )
         assert (
-                len(oids) == len(str_values)
-                and len(str_values) == len(value_types)
-                and len(value_types) == len(expected_translations)
+            len(oids) == len(str_values)
+            and len(str_values) == len(value_types)
+            and len(value_types) == len(expected_translations)
         )
         for index in range(0, len(oids)):
             input_var_binds_colons = [

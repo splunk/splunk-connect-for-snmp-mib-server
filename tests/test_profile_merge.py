@@ -20,10 +20,10 @@ from splunk_connect_for_snmp_mib_server.profiles import merge_profiles
 
 class ProfileLoaderTest(TestCase):
     def test_multiple_files_merging(self):
-        merged_profiles = merge_profiles('profiles', 'profiles')['profiles']
+        merged_profiles = merge_profiles("profiles", "profiles")["profiles"]
 
         assert len(merged_profiles.keys()) == 4
-        assert 'basev1' in merged_profiles.keys()
-        assert 'basev2' in merged_profiles.keys()
-        assert 'basev1l2' in merged_profiles.keys()
-        assert 'basev2l2' in merged_profiles.keys()
+        assert "basev1" in merged_profiles.keys()
+        assert "basev2" in merged_profiles.keys()
+        assert "basev1l2" in merged_profiles.keys()
+        assert "basev2l2" in merged_profiles.keys()
