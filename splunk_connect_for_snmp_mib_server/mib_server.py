@@ -71,7 +71,7 @@ class MibServer:
 
         @app.route("/profiles", methods=["GET"])
         def get_profiles():
-            return merge_profiles(profiles_path, 'profiles')
+            return merge_profiles(profiles_path, "profiles")
 
         return app
 

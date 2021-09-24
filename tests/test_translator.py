@@ -152,7 +152,8 @@ class TranslatorTest(TestCase):
             value_type = input_var_binds_list[i]["val_type"]
             oid = input_var_binds_list[i]["oid"]
             value = input_var_binds_list[i]["val"]
-            current = f'oid-type{i + 1}="{oid_type}" value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
+            current = f'oid-type{i + 1}="{oid_type}"' \
+                      f' value{i + 1}-type="{value_type}" {oid}="{value}" value{i + 1}="{value}"'
             # these two additional spaces are not an error
             untranslated += f"{current}  "
             if i < len(input_var_binds_list) - 1:
