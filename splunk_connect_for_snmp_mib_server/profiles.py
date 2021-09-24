@@ -15,10 +15,9 @@
 #   ########################################################################
 import logging
 import os
+import yaml
 
 from yaml.parser import ParserError
-
-import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,9 @@ def merge_profiles(directory, root_name):
                     data = yaml.safe_load(stream)
                     merged_profiles.update(data[root_name])
                 except ParserError as pe:
-                    logger.warning(f"Error while parsing file {os.path.join(root, name)} : {pe}")
+                    logger.warning(
+                        f"Error while parsing file {os.path.join(root, name)} : {pe}"
+                    )
 
     result[root_name] = merged_profiles
     return result
