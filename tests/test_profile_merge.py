@@ -15,12 +15,13 @@
 #   ########################################################################
 
 from unittest import TestCase
+
 from splunk_connect_for_snmp_mib_server.profiles import merge_profiles
 
 
 class ProfileLoaderTest(TestCase):
     def test_multiple_files_merging(self):
-        merged_profiles = merge_profiles("profiles", "profiles")["profiles"]
+        merged_profiles = merge_profiles("tests/profiles", "profiles")["profiles"]
 
         assert len(merged_profiles.keys()) == 4
         assert "basev1" in merged_profiles.keys()
