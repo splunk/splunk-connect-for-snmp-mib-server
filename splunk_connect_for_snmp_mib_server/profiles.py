@@ -13,19 +13,26 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-
+import logging
 import os
+
+from yaml.parser import ParserError
 
 import yaml
 
+logger = logging.getLogger(__name__)
 
 def merge_profiles(directory, root_name):
     result = {}
     merged_profiles = {}
     for root, directories, files in os.walk(directory, topdown=False):
-        for name in files:
+        for name in sorted(files):
             with open(os.path.join(root, name), "r") as stream:
-                data = yaml.safe_load(stream)
-                merged_profiles.update(data[root_name])
+                try:
+                    data = yaml.safe_load(stream)
+                    merged_profiles.update(data[root_name])
+                except ParserError as pe:
+                    logger.warning(f"Error while parsing file {os.path.join(root, name)} : {pe}")
+
     result[root_name] = merged_profiles
     return result
