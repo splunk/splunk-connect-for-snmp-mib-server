@@ -1,0 +1,27 @@
+profiles:
+  basev2:
+    patterns:
+      - '*MY_DEFAULT_DEVICE_3*'
+    frequency: 60
+    varBinds:
+      # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+      - ['SNMPv2-MIB', 'sysDescr']
+      - ['SNMPv2-MIB', 'sysUpTime',0]
+      - ['SNMPv2-MIB', 'sysName']
+      - '1.3.6.1.2.1.2.*'
+  basev2l2:
+    patterns:
+      - '*MY_DEFAULT_DEVICE_3*'
+      - '*MY_DEFAULT_DEVICE_NAME_3*'
+    frequency: 120
+    varBinds:
+      # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+      - ['SNMPv2-MIB', 'sysDescr']
+      - ['SNMPv2-MIB', 'sysUpTime',0]
+      - ['SNMPv2-MIB', 'sysName']
+      - ['IF-MIB','ifHCInOctets']
+      - ['IF-MIB','ifHCOutOctets']
+      - ['IF-MIB','ifInErrors']
+      - ['IF-MIB','ifOutErrors']
+      - ['IF-MIB','ifInDiscards']
+      - ['IF-MIB','ifOutDiscards']

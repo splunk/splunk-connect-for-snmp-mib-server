@@ -13,12 +13,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
-
 import logging
 
 from flask import Flask, request
 from flask_autoindex import AutoIndex
 
+from splunk_connect_for_snmp_mib_server.profiles import merge_profiles
 from splunk_connect_for_snmp_mib_server.translator import Translator
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,7 @@ class MibServer:
     def build_flask_app(self):
         app = Flask(__name__)
         mibs_path = self._server_config["snmp"]["mibs"]["mibs_path"]
+        profiles_path = self._server_config["snmp"]["mibs"]["profiles_path"]
         files_index = AutoIndex(app, mibs_path, add_url_rules=False)
 
         @app.route("/")
@@ -67,6 +68,10 @@ class MibServer:
             else:
                 result = self._translator.format_text_event(var_binds)
             return result
+
+        @app.route("/profiles", methods=["GET"])
+        def get_profiles():
+            return merge_profiles(profiles_path, 'profiles')
 
         return app
 
