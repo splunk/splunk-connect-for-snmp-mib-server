@@ -33,6 +33,7 @@ def upload_mibs(server_config):
     mibs_collection.clear()
     # Upload all mib files in specific dir into mongo
     mibs_collection.upload_files(mib_files_dir)
+    mibs_collection.create_text_index()
     logger.debug("Uploaded all mib files into mongo!")
 
 

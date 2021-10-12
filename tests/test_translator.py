@@ -27,6 +27,7 @@ from pysnmp.hlapi import (
 )
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
 from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
 from splunk_connect_for_snmp_mib_server.translator import Translator
 
@@ -100,6 +101,7 @@ class TranslatorTest(TestCase):
         # server_config["snmp"]["mibs"]["dir"] = "../mibs/pysnmp"
         self.my_translator = Translator(server_config)
         upload_mibs(server_config)
+        MibsRepository.is_text_index_created = False
 
     @mongomock.patch()
     def test_format_trap(self):
