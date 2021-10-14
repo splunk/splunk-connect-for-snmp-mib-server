@@ -218,9 +218,9 @@ class Translator:
                 logger.info("[-] Trying to lazy load MIBs")
                 uid = uuid.uuid4()
                 tic = time.perf_counter()
-                self.find_mib_file(name, uid=uid)
+                self.find_mib_file(name, remove_index=False, uid=uid)
                 toc = time.perf_counter()
-                logger.info(f"MIB_FILE took - {toc - tic:0.7f} seconds")
+                logger.info(f"MIB_FILE took - {toc - tic:0.7f} seconds for uuid - {uid}")
                 try:
                     translated_var_bind = rfc1902.ObjectType(
                         rfc1902.ObjectIdentity(name), val
