@@ -121,8 +121,7 @@ class Translator:
             )
 
     # Find mib module based on the oid
-    def find_mib_file(self, oid, remove_index=False):
-        uid = uuid.uuid4()
+    def find_mib_file(self, oid, remove_index=False, uid=None):
         logger.info(f"Searching for {oid} and remove_index is {remove_index} with uuid- {uid}")
         value_tuple = str(oid).replace(".", ", ")
         mib_list = None
@@ -165,7 +164,7 @@ class Translator:
                 oid_without_index = ".".join(oid.split(".")[:-1])
                 logger.info(f"[-] oid_without_index: {oid_without_index}"
                             f"for uid - {uid}")
-                self.find_mib_file(oid_without_index, remove_index=True)
+                self.find_mib_file(oid_without_index, remove_index=True, uid=uid)
             return
         for mib_name in mib_list:
             mib_name = mib_name[:-3]
@@ -173,7 +172,7 @@ class Translator:
                         f"for uid - {uid}")
             # load the mib module
             tic = time.perf_counter()
-            self.load_extra_mib(mib_name, oid)
+            self.load_extra_mib(mib_name, oid, uid)
             toc = time.perf_counter()
             logger.info(
                 f"[-] The mib_name - {mib_name} was loaded"
@@ -181,12 +180,12 @@ class Translator:
                 f"for uid - {uid}"
             )
 
-
     # Load additional mib module
-    def load_extra_mib(self, mib_module, oid):
+    def load_extra_mib(self, mib_module, oid, uid):
         try:
             self._mib_builder.loadModules(mib_module)
-            logger.debug(f"[-] Loaded module: {mib_module}")
+            logger.info(f"[-] Loaded module: {mib_module}"
+                        f"for uid - {uid}")
             # add this mib module into mibs_list.csv if it was successfully loaded
             self.write_mib_to_load_list(mib_module)
         except Exception as e:
@@ -217,7 +216,11 @@ class Translator:
             logger.error(f"Error happened in translation: {e}")
             if "not OBJECT-TYPE" in str(e):
                 logger.info("[-] Trying to lazy load MIBs")
-                self.find_mib_file(name)
+                uid = uuid.uuid4()
+                tic = time.perf_counter()
+                self.find_mib_file(name, uid=uid)
+                toc = time.perf_counter()
+                logger.info(f"MIB_FILE took - {toc - tic:0.7f} seconds")
                 try:
                     translated_var_bind = rfc1902.ObjectType(
                         rfc1902.ObjectIdentity(name), val
