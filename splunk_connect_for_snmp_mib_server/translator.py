@@ -149,8 +149,10 @@ class Translator:
             )
         self.add_oid_to_db(mib_list, oid, uid, value_tuple)
         self.add_oid_to_db(mib_list_without_index, oid, uid, changed_oid_without_index)
-        self.load_extra_mibs(mib_list, oid, uid)
-        self.load_extra_mibs(mib_list_without_index, oid, uid)
+        if mib_list:
+            self.load_extra_mibs(mib_list, oid, uid)
+        if mib_list_without_index:
+            self.load_extra_mibs(mib_list_without_index, oid, uid)
 
     def add_oid_to_db(self, mib_list, oid, uid, value_tuple):
         if not mib_list:
