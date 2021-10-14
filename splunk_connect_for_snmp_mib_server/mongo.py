@@ -18,6 +18,7 @@ import os
 import time
 
 import pymongo
+from pymongo import CursorType
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +76,22 @@ class MibsRepository(MongoRepository):
     def search_oid(self, oid, uid):
         data = self.perform_correct_search(oid, uid)
         if data:
+            tic = time.perf_counter()
             mib_list = []
             for item in data:
                 mib_list.append(item["filename"])
+            toc = time.perf_counter()
+            logger.info(f"Iterating list for  {toc - tic:0.7f}"
+                        f" for uuid - {uid}")
             return mib_list
         else:
             return None
 
+
     def perform_correct_search(self, oid, uid):
         tic = time.perf_counter()
         if MibsRepository.is_text_index_created:
-            data = self._mibs.find({"$text": {"$search": f'"{oid}"'}})
+            data = self._mibs.find({"$text": {"$search": f'"{oid}"'}}, cursor_type=CursorType.NON_TAILABLE)
         else:
             data = self._mibs.find({"content": {"$regex": oid}})
         toc = time.perf_counter()
@@ -94,9 +100,13 @@ class MibsRepository(MongoRepository):
             f"and the search took - {toc - tic:0.7f} seconds"
             f"for uuid - {uid}"
         )
-        logger.info(f"data that we found {data.count()}"
+        tic = time.perf_counter()
+        queried_cursor = list(data)
+        toc = time.perf_counter()
+        logger.info(f"data that we found {len(queried_cursor)}"
+                    f"and the query of the cursor take - {toc - tic:0.7f} seconds"
                     f"for uuid - {uid}")
-        return data
+        return queried_cursor
 
     def delete_mib(self, filename):
         self._mibs.delete_many({"filename": {"$regex": filename}})

@@ -122,7 +122,7 @@ class Translator:
 
     # Find mib module based on the oid
     def find_mib_file(self, oid, remove_index=False, uid=None):
-        logger.info(f"Searching for {oid} and remove_index is {remove_index} with uuid- {uid}")
+        logger.info(f"Searching for {oid} and remove_index is {remove_index} with uuid - {uid}")
         value_tuple = str(oid).replace(".", ", ")
         mib_list = None
 
