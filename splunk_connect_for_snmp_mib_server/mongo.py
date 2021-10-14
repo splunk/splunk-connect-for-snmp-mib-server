@@ -89,16 +89,12 @@ class MibsRepository(MongoRepository):
         else:
             data = self._mibs.find({"content": {"$regex": oid}})
         toc = time.perf_counter()
-        tic2 = time.perf_counter()
-        self._mibs.find_one({"content": {"$regex": oid}})
-        toc2 = time.perf_counter()
         logger.info(
             f"We searched with {'Index' if MibsRepository.is_text_index_created else 'Regex'} "
             f"and the search took - {toc - tic:0.7f} seconds"
-            f"and the find_one search took - {toc2 - tic2:0.7f} seconds"
             f"for uuid - {uid}"
         )
-        logger.info(f"data that we found {data}"
+        logger.info(f"data that we found {data.count()}"
                     f"for uuid - {uid}")
         return data
 

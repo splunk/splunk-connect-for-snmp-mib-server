@@ -129,29 +129,29 @@ class Translator:
         try:
             mib_list = self._mongo_mibs_coll.search_oid(value_tuple, uid)
         except Exception as e:
-            logger.error(
-                f"Error happened during search the oid in mongo mibs collection: {e}"
+            logger.exception(
+                f"Error happened during search the oid in mongo mibs collection "
                 f"for uuid - {uid}"
             )
         if not mib_list:
             logger.error(
-                f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
+                f"Can NOT find the mib file for the oid - {oid} -- {value_tuple} "
                 f"for uuid - {uid}"
             )
-            logger.info(f"Writing the no_mapping_mib_oid-{oid} into mongo"
+            logger.info(f"Writing the no_mapping_mib_oid - {oid} into mongo "
                         f"for uuid - {uid}")
             try:
                 tic = time.perf_counter()
                 self._mongo_oids_coll.add_oid(str(oid))
                 toc = time.perf_counter()
                 logger.info(
-                    f"[-] The oid - {oid} was added into mongo oids collection"
-                    f"and it took - {toc - tic:0.7f} seconds"
+                    f"[-] The oid - {oid} was added into mongo oids collection "
+                    f"and it took - {toc - tic:0.7f} seconds "
                     f"for uid - {uid}"
                 )
             except Exception as e:
-                logger.error(
-                    f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
+                logger.exception(
+                    f"Error happened during add the oid - {oid} into mongo oids collection "
                     f"for uid - {uid}"
                 )
             # Find mib module for OID without index (remove the last part of OID)
@@ -162,21 +162,21 @@ class Translator:
             # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
             if not remove_index:
                 oid_without_index = ".".join(oid.split(".")[:-1])
-                logger.info(f"[-] oid_without_index: {oid_without_index}"
+                logger.info(f"[-] oid_without_index: {oid_without_index} "
                             f"for uid - {uid}")
                 self.find_mib_file(oid_without_index, remove_index=True, uid=uid)
             return
         for mib_name in mib_list:
             mib_name = mib_name[:-3]
-            logger.info(f"mib_name: {mib_name}" 
+            logger.info(f"mib_name: {mib_name} " 
                         f"for uid - {uid}")
             # load the mib module
             tic = time.perf_counter()
             self.load_extra_mib(mib_name, oid, uid)
             toc = time.perf_counter()
             logger.info(
-                f"[-] The mib_name - {mib_name} was loaded"
-                f"and it took - {toc - tic:0.7f} seconds"
+                f"[-] The mib_name - {mib_name} was loaded "
+                f"and it took - {toc - tic:0.7f} seconds "
                 f"for uid - {uid}"
             )
 
