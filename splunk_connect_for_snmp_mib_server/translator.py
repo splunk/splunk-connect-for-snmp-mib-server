@@ -126,13 +126,33 @@ class Translator:
         value_tuple = str(oid).replace(".", ", ")
         mib_list = None
 
+        oid_without_index = ".".join(oid.split(".")[:-1])
+        changed_oid_without_index = str(oid_without_index).replace(".", ", ")
+        mib_list_without_index = None
+
         try:
             mib_list = self._mongo_mibs_coll.search_oid(value_tuple, uid)
+            if not remove_index:
+                # Find mib module for OID without index (remove the last part of OID)
+                # Handle the scenario that tries to translate an OID which has index append at the end.
+                # e.g 1.3.6.1.2.1.25.1.6.0, where 0 is index and it's not part of the OID object
+                # So we cannot find mapping MIBs for it
+                # Instead, 1.3.6.1.2.1.25.1.6 is actually the OID that needed to be used for searching MIBs
+                # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
+                logger.info(f"[-] oid_without_index: {oid_without_index} "
+                            f"for uid - {uid}")
+                mib_list_without_index = self._mongo_mibs_coll.search_oid(changed_oid_without_index, uid)
         except Exception as e:
             logger.exception(
                 f"Error happened during search the oid in mongo mibs collection "
                 f"for uuid - {uid}"
             )
+        self.add_oid_to_db(mib_list, oid, uid, value_tuple)
+        self.add_oid_to_db(mib_list_without_index, oid, uid, changed_oid_without_index)
+        self.load_extra_mibs(mib_list, oid, uid)
+        self.load_extra_mibs(mib_list_without_index, oid, uid)
+
+    def add_oid_to_db(self, mib_list, oid, uid, value_tuple):
         if not mib_list:
             logger.error(
                 f"Can NOT find the mib file for the oid - {oid} -- {value_tuple} "
@@ -142,7 +162,9 @@ class Translator:
                         f"for uuid - {uid}")
             try:
                 tic = time.perf_counter()
-                self._mongo_oids_coll.add_oid(str(oid))
+                if self._mongo_oids_coll.contains_oid(str(oid)) == 0:
+                    logger.info(f"Adding oid {oid} as it is not in the db for uuid - {uid}")
+                    self._mongo_oids_coll.add_oid(str(oid))
                 toc = time.perf_counter()
                 logger.info(
                     f"[-] The oid - {oid} was added into mongo oids collection "
@@ -154,21 +176,11 @@ class Translator:
                     f"Error happened during add the oid - {oid} into mongo oids collection "
                     f"for uid - {uid}"
                 )
-            # Find mib module for OID without index (remove the last part of OID)
-            # Handle the scenario that tries to translate an OID which has index append at the end.
-            # e.g 1.3.6.1.2.1.25.1.6.0, where 0 is index and it's not part of the OID object
-            # So we cannot find mapping MIBs for it
-            # Instead, 1.3.6.1.2.1.25.1.6 is actually the OID that needed to be used for searching MIBs
-            # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
-            if not remove_index:
-                oid_without_index = ".".join(oid.split(".")[:-1])
-                logger.info(f"[-] oid_without_index: {oid_without_index} "
-                            f"for uid - {uid}")
-                self.find_mib_file(oid_without_index, remove_index=True, uid=uid)
-            return
+
+    def load_extra_mibs(self, mib_list, oid, uid):
         for mib_name in mib_list:
             mib_name = mib_name[:-3]
-            logger.info(f"mib_name: {mib_name} " 
+            logger.info(f"mib_name: {mib_name} "
                         f"for uid - {uid}")
             # load the mib module
             tic = time.perf_counter()
