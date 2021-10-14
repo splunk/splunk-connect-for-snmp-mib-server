@@ -72,8 +72,8 @@ class MibsRepository(MongoRepository):
         MibsRepository.is_text_index_created = True
         logger.info(f"Creating index took - {toc - tic:0.4f} seconds")
 
-    def search_oid(self, oid):
-        data = self.perform_correct_search(oid)
+    def search_oid(self, oid, uid):
+        data = self.perform_correct_search(oid, uid)
         if data:
             mib_list = []
             for item in data:
@@ -82,17 +82,24 @@ class MibsRepository(MongoRepository):
         else:
             return None
 
-    def perform_correct_search(self, oid):
+    def perform_correct_search(self, oid, uid):
         tic = time.perf_counter()
         if MibsRepository.is_text_index_created:
             data = self._mibs.find({"$text": {"$search": f'"{oid}"'}})
         else:
             data = self._mibs.find({"content": {"$regex": oid}})
         toc = time.perf_counter()
-        logger.debug(
+        tic2 = time.perf_counter()
+        self._mibs.find_one({"content": {"$regex": oid}})
+        toc2 = time.perf_counter()
+        logger.info(
             f"We searched with {'Index' if MibsRepository.is_text_index_created else 'Regex'} "
             f"and the search took - {toc - tic:0.7f} seconds"
+            f"and the find_one search took - {toc2 - tic2:0.7f} seconds"
+            f"for uuid - {uid}"
         )
+        logger.info(f"data that we found {data}"
+                    f"for uuid - {uid}")
         return data
 
     def delete_mib(self, filename):

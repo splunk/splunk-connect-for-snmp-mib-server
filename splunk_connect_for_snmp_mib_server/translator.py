@@ -17,13 +17,12 @@ import csv
 import json
 import logging
 import os
+import time
+import uuid
 
-from pysmi import debug as pysmi_debug
 from pysnmp.smi import builder, compiler, rfc1902, view
 
 from splunk_connect_for_snmp_mib_server.mongo import MibsRepository, OidsRepository
-
-pysmi_debug.setLogger(pysmi_debug.Debug("compiler"))
 
 logger = logging.getLogger(__name__)
 
@@ -107,16 +106,6 @@ class Translator:
             self.mib_translator(var_bind)
         logger.debug("mib_translator is ready to use!")
 
-    # Check if the oid was translated properly
-    def is_not_translated(self, org_val, trans_val):
-        # if translated value equals to original value, it was not translated at all
-        if org_val == trans_val:
-            return True
-        temp = trans_val.split(".")
-        logger.debug(f"temp: {temp}")
-        # if the second last number of the oid is numeric, it was not translated properly
-        return len(temp) >= 2 and temp[-2].isnumeric()
-
     def write_mib_to_load_list(self, mib_name):
         mib_file_path = os.path.join(os.getcwd(), self._load_list)
         logger.debug(f"mib_file_path: {mib_file_path}")
@@ -133,28 +122,38 @@ class Translator:
 
     # Find mib module based on the oid
     def find_mib_file(self, oid, remove_index=False):
+        uid = uuid.uuid4()
+        logger.info(f"Searching for {oid} and remove_index is {remove_index} with uuid- {uid}")
         value_tuple = str(oid).replace(".", ", ")
         mib_list = None
 
         try:
-            mib_list = self._mongo_mibs_coll.search_oid(value_tuple)
+            mib_list = self._mongo_mibs_coll.search_oid(value_tuple, uid)
         except Exception as e:
             logger.error(
                 f"Error happened during search the oid in mongo mibs collection: {e}"
+                f"for uuid - {uid}"
             )
         if not mib_list:
-            logger.warning(
+            logger.error(
                 f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
+                f"for uuid - {uid}"
             )
-            logger.debug(f"Writing the no_mapping_mib_oid-{oid} into mongo")
+            logger.info(f"Writing the no_mapping_mib_oid-{oid} into mongo"
+                        f"for uuid - {uid}")
             try:
+                tic = time.perf_counter()
                 self._mongo_oids_coll.add_oid(str(oid))
-                logger.debug(
+                toc = time.perf_counter()
+                logger.info(
                     f"[-] The oid - {oid} was added into mongo oids collection"
+                    f"and it took - {toc - tic:0.7f} seconds"
+                    f"for uid - {uid}"
                 )
             except Exception as e:
                 logger.error(
                     f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
+                    f"for uid - {uid}"
                 )
             # Find mib module for OID without index (remove the last part of OID)
             # Handle the scenario that tries to translate an OID which has index append at the end.
@@ -164,14 +163,24 @@ class Translator:
             # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
             if not remove_index:
                 oid_without_index = ".".join(oid.split(".")[:-1])
-                logger.debug(f"[-] oid_without_index: {oid_without_index}")
+                logger.info(f"[-] oid_without_index: {oid_without_index}"
+                            f"for uid - {uid}")
                 self.find_mib_file(oid_without_index, remove_index=True)
             return
         for mib_name in mib_list:
             mib_name = mib_name[:-3]
-            logger.debug(f"mib_name: {mib_name}")
+            logger.info(f"mib_name: {mib_name}" 
+                        f"for uid - {uid}")
             # load the mib module
+            tic = time.perf_counter()
             self.load_extra_mib(mib_name, oid)
+            toc = time.perf_counter()
+            logger.info(
+                f"[-] The mib_name - {mib_name} was loaded"
+                f"and it took - {toc - tic:0.7f} seconds"
+                f"for uid - {uid}"
+            )
+
 
     # Load additional mib module
     def load_extra_mib(self, mib_module, oid):
@@ -195,21 +204,6 @@ class Translator:
                     f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
                 )
             pass
-
-    # Check if the oid is already in the mongodb
-    def check_mongo(self, oid):
-        # TODO remove #119-121 later
-        no_mapping_mib = False
-        try:
-            result = self._mongo_oids_coll.contains_oid(str(oid))
-            # if the oid was found in mongo, then the oid is verified that there is not mapping mib module for it
-            no_mapping_mib = True if result != 0 else False
-        except Exception as e:
-            logger.error(
-                f"Error happened when finding oid in mongo oids collection: {e}"
-            )
-
-        return no_mapping_mib
 
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
