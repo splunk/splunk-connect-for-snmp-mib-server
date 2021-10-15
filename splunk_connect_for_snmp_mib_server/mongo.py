@@ -93,7 +93,14 @@ class MibsRepository(MongoRepository):
             f"We searched with {'Index' if MibsRepository.is_text_index_created else 'Regex'} "
             f"and the search took - {toc - tic:0.7f} seconds"
         )
-        return data
+        tic = time.perf_counter()
+        queried_cursor = list(data)
+        toc = time.perf_counter()
+        logger.debug(
+            f"data that we found {len(queried_cursor)}"
+            f"and the query of the cursor take - {toc - tic:0.7f} seconds"
+        )
+        return queried_cursor
 
     def delete_mib(self, filename):
         self._mibs.delete_many({"filename": {"$regex": filename}})
