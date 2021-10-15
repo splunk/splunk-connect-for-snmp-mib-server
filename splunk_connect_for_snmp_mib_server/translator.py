@@ -18,12 +18,9 @@ import json
 import logging
 import os
 
-from pysmi import debug as pysmi_debug
 from pysnmp.smi import builder, compiler, rfc1902, view
 
 from splunk_connect_for_snmp_mib_server.mongo import MibsRepository, OidsRepository
-
-pysmi_debug.setLogger(pysmi_debug.Debug("compiler"))
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +75,8 @@ class Translator:
                     mib_builder.loadModules(module)
                     cnt += 1
                     logger.debug(f"[-] {cnt} Loaded module: {module}")
-                except Exception as e:
-                    logger.error(f"Error happened during load module: {e}")
+                except Exception:
+                    logger.exception("Error happened during load module")
                     pass
 
         logger.debug("compiler is loaded")
@@ -107,16 +104,6 @@ class Translator:
             self.mib_translator(var_bind)
         logger.debug("mib_translator is ready to use!")
 
-    # Check if the oid was translated properly
-    def is_not_translated(self, org_val, trans_val):
-        # if translated value equals to original value, it was not translated at all
-        if org_val == trans_val:
-            return True
-        temp = trans_val.split(".")
-        logger.debug(f"temp: {temp}")
-        # if the second last number of the oid is numeric, it was not translated properly
-        return len(temp) >= 2 and temp[-2].isnumeric()
-
     def write_mib_to_load_list(self, mib_name):
         mib_file_path = os.path.join(os.getcwd(), self._load_list)
         logger.debug(f"mib_file_path: {mib_file_path}")
@@ -126,90 +113,83 @@ class Translator:
                 writer.writerow([mib_name])
                 logger.debug(f"[-] Wrote {mib_name} to mib list")
             mib_list_file.close()
-        except Exception as e:
-            logger.error(
-                f"Error happened during write the mib into mib load list file: {e}"
+        except Exception:
+            logger.exception(
+                f"Error happened during write the mib - {mib_name} into mib load list file"
             )
 
     # Find mib module based on the oid
-    def find_mib_file(self, oid, remove_index=False):
+    def find_mib_file(self, oid):
+        logger.debug(f"Searching for {oid}")
         value_tuple = str(oid).replace(".", ", ")
         mib_list = None
 
+        oid_without_index = ".".join(oid.split(".")[:-1])
+        changed_oid_without_index = str(oid_without_index).replace(".", ", ")
+        mib_list_without_index = None
+
         try:
             mib_list = self._mongo_mibs_coll.search_oid(value_tuple)
-        except Exception as e:
-            logger.error(
-                f"Error happened during search the oid in mongo mibs collection: {e}"
-            )
-        if not mib_list:
-            logger.warning(
-                f"Can NOT find the mib file for the oid-{oid} -- {value_tuple}"
-            )
-            logger.debug(f"Writing the no_mapping_mib_oid-{oid} into mongo")
-            try:
-                self._mongo_oids_coll.add_oid(str(oid))
-                logger.debug(
-                    f"[-] The oid - {oid} was added into mongo oids collection"
-                )
-            except Exception as e:
-                logger.error(
-                    f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
-                )
             # Find mib module for OID without index (remove the last part of OID)
             # Handle the scenario that tries to translate an OID which has index append at the end.
             # e.g 1.3.6.1.2.1.25.1.6.0, where 0 is index and it's not part of the OID object
             # So we cannot find mapping MIBs for it
             # Instead, 1.3.6.1.2.1.25.1.6 is actually the OID that needed to be used for searching MIBs
             # Therefore, we should remove index (0) and search the real oid (1.3.6.1.2.1.25.1.6) to detect the MIBs
-            if not remove_index:
-                oid_without_index = ".".join(oid.split(".")[:-1])
-                logger.debug(f"[-] oid_without_index: {oid_without_index}")
-                self.find_mib_file(oid_without_index, remove_index=True)
-            return
+            logger.debug(f"[-] oid_without_index: {oid_without_index}")
+            mib_list_without_index = self._mongo_mibs_coll.search_oid(
+                changed_oid_without_index
+            )
+        except Exception:
+            logger.exception(
+                f"Error happened during search for the oid - {oid} in mongo mibs collection"
+            )
+        self.add_oid_to_db(mib_list, oid)
+        self.add_oid_to_db(mib_list_without_index, oid)
+        if mib_list:
+            self.load_extra_mibs(mib_list, oid)
+        if mib_list_without_index:
+            self.load_extra_mibs(mib_list_without_index, oid)
+
+    def add_oid_to_db(self, mib_list, oid):
+        if not mib_list:
+            try:
+                if self._mongo_oids_coll.contains_oid(str(oid)) == 0:
+                    logger.info(f"Adding oid {oid} as it is not in the db")
+                    self._mongo_oids_coll.add_oid(str(oid))
+            except Exception:
+                logger.exception(
+                    f"Error happened during add the oid - {oid} into mongo oids collection"
+                )
+
+    def load_extra_mibs(self, mib_list, oid):
         for mib_name in mib_list:
             mib_name = mib_name[:-3]
-            logger.debug(f"mib_name: {mib_name}")
-            # load the mib module
             self.load_extra_mib(mib_name, oid)
+            logger.info(f"[-] The mib for mib_name - {mib_name} was loaded")
 
     # Load additional mib module
     def load_extra_mib(self, mib_module, oid):
         try:
             self._mib_builder.loadModules(mib_module)
-            logger.debug(f"[-] Loaded module: {mib_module}")
             # add this mib module into mibs_list.csv if it was successfully loaded
             self.write_mib_to_load_list(mib_module)
         except Exception as e:
             logger.warning(
-                f"Error happened during load mib module - {mib_module} for oid - {oid} : {e}"
+                f"Error happened during loading of the mib module - {mib_module} for oid - {oid} : {e}"
             )
             logger.debug(f"Writing the oid-{oid} into mongo oids collection")
             try:
-                self._mongo_oids_coll.add_oid(str(oid))
-                logger.debug(
-                    f"[-] The oid - {oid} was added into mongo oids collection"
-                )
-            except Exception as e:
-                logger.error(
-                    f"Error happened during add the oid - {oid} into mongo oids collection: {e}"
+                if self._mongo_oids_coll.contains_oid(str(oid)) == 0:
+                    self._mongo_oids_coll.add_oid(str(oid))
+                    logger.debug(
+                        f"[-] The oid - {oid} was added into mongo oids collection"
+                    )
+            except Exception:
+                logger.exception(
+                    f"Error happened during add the oid - {oid} into mongo oids collection"
                 )
             pass
-
-    # Check if the oid is already in the mongodb
-    def check_mongo(self, oid):
-        # TODO remove #119-121 later
-        no_mapping_mib = False
-        try:
-            result = self._mongo_oids_coll.contains_oid(str(oid))
-            # if the oid was found in mongo, then the oid is verified that there is not mapping mib module for it
-            no_mapping_mib = True if result != 0 else False
-        except Exception as e:
-            logger.error(
-                f"Error happened when finding oid in mongo oids collection: {e}"
-            )
-
-        return no_mapping_mib
 
     # Translate SNMP PDU varBinds into MIB objects using MIB
     def mib_translator(self, var_bind):
@@ -220,9 +200,9 @@ class Translator:
                 rfc1902.ObjectIdentity(name), val
             ).resolveWithMib(self._mib_view_controller)
         except Exception as e:
-            logger.error(f"Error happened in translation: {e}")
+            logger.exception("Error happened in translation")
             if "not OBJECT-TYPE" in str(e):
-                logger.info("[-] Trying to lazy load MIBs")
+                logger.debug("[-] Trying to lazy load MIBs")
                 self.find_mib_file(name)
                 try:
                     translated_var_bind = rfc1902.ObjectType(
