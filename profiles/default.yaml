@@ -16,6 +16,8 @@
 profiles:
   basev1:
     frequency: 10
+#    patterns:
+#      - '.*STRING_TO_BE_MATCHED.*'
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ['SNMPv2-MIB', 'sysDescr']
