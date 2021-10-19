@@ -33,7 +33,7 @@ Flask-AutoIndex = "^0.6.6"
 [tool.poetry.dev-dependencies]
 mongomock = "^3.22.1"
 pytest = "^6.2.5"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 
 [tool.poetry.scripts]
 sc4snmp-mib-server = "splunk_connect_for_snmp_mib_server.snmp_mib_server:main"
