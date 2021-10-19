@@ -15,8 +15,10 @@
 #   ########################################################################
 import argparse
 import logging
+import time
 
 import yaml
+from pymongo.errors import ServerSelectionTimeoutError
 
 from splunk_connect_for_snmp_mib_server.mib_server import MibServer
 from splunk_connect_for_snmp_mib_server.mongo import MibsRepository
@@ -30,7 +32,15 @@ def upload_mibs(server_config):
     mibs_collection = MibsRepository(mibs_mongo_config)
     # TODO do we need to clean up before loading
     # Clean up
-    mibs_collection.clear()
+    try:
+        mibs_collection.clear()
+    except ServerSelectionTimeoutError:
+        logger.exception(
+            "Connection refused while trying to clean mongo db, retrying in 15 seconds"
+        )
+        time.sleep(15)
+        mibs_collection.clear()
+
     # Upload all mib files in specific dir into mongo
     mibs_collection.upload_files(mib_files_dir)
     mibs_collection.create_text_index()
