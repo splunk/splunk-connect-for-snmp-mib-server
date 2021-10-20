@@ -15,6 +15,7 @@
 #   ########################################################################
 import logging
 import os
+import re
 import time
 
 import pymongo
@@ -37,7 +38,7 @@ class MongoRepository:
 
 
 class MibsRepository(MongoRepository):
-    is_text_index_created = False
+    oid_regex = re.compile(r"\(((?:1, 3, 6, 1, )(?:\d+,?\s?)+)\)")
 
     def __init__(self, mongo_config):
         super().__init__()
@@ -49,9 +50,16 @@ class MibsRepository(MongoRepository):
             file_path = mib_files_dir + "/" + filename
             with open(file_path, "r") as mib_file:
                 try:
+                    read_file = mib_file.read()
                     self._mibs.insert_one(
-                        dict(content=mib_file.read(), filename=filename, _id=filename)
+                        dict(
+                            content=read_file,
+                            filename=filename,
+                            _id=filename,
+                            mibs=self.parse_iods(read_file),
+                        )
                     )
+                    self.parse_iods(read_file)
                 except Exception:
                     logger.exception(
                         "Error happened during insert mib files %s into mongo", filename
@@ -59,21 +67,24 @@ class MibsRepository(MongoRepository):
         toc = time.perf_counter()
         logger.info(f"Uploading files took - {toc - tic:0.4f} seconds")
 
-    def create_text_index(self):
+    @staticmethod
+    def parse_iods(read_file):
+        return re.findall(MibsRepository.oid_regex, read_file)
+
+    def create_index_on_oids(self):
         tic = time.perf_counter()
         try:
-            self._mibs.create_index([("content", pymongo.TEXT)], name="oid_index")
+            self._mibs.create_index("mibs", name="oid_index")
         except Exception:
             logger.exception(
-                "Failed to create the index, searches will be performed with regex"
+                "Failed to create the index, searches will be performed without it"
             )
             return
         toc = time.perf_counter()
-        MibsRepository.is_text_index_created = True
         logger.info(f"Creating index took - {toc - tic:0.4f} seconds")
 
     def search_oid(self, oid):
-        data = self.perform_correct_search(oid)
+        data = self.perform_search(oid)
         if data:
             mib_list = []
             for item in data:
@@ -82,31 +93,23 @@ class MibsRepository(MongoRepository):
         else:
             return None
 
-    def perform_correct_search(self, oid):
+    def perform_search(self, oid):
         tic = time.perf_counter()
-        if MibsRepository.is_text_index_created:
-            data = self._mibs.find({"$text": {"$search": f'"{oid}"'}})
-        else:
-            data = self._mibs.find({"content": {"$regex": oid}})
+        data = list(self._mibs.find({"mibs": oid}))
         toc = time.perf_counter()
         logger.debug(
-            f"We searched with {'Index' if MibsRepository.is_text_index_created else 'Regex'} "
-            f"and the search took - {toc - tic:0.7f} seconds"
+            f"We searched for oid - {oid} and it took - {toc - tic:0.7f} seconds"
         )
-        tic = time.perf_counter()
-        queried_cursor = list(data)
-        toc = time.perf_counter()
-        logger.debug(
-            f"data that we found {len(queried_cursor)}"
-            f"and the query of the cursor take - {toc - tic:0.7f} seconds"
-        )
-        return queried_cursor
+        return data
 
     def delete_mib(self, filename):
         self._mibs.delete_many({"filename": {"$regex": filename}})
 
     def clear(self):
-        self._mibs.delete_many({})
+        tic = time.perf_counter()
+        self._mibs.drop()
+        toc = time.perf_counter()
+        logger.info(f"Cleaning took - {toc - tic:0.4f} seconds")
 
 
 class OidsRepository(MongoRepository):
