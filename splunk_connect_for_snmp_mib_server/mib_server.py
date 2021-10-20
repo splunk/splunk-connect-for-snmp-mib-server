@@ -59,9 +59,11 @@ class MibServer:
             logger.debug(request.json)
             var_binds = request.json.get("var_binds")
             data_format = request.args.get("data_format")
-            logger.debug(f"type of var_binds: {type(var_binds)}")
-            logger.debug(f"var_binds: {var_binds}")
-            logger.debug(f"requested data format: {str(data_format)} ")
+            logger.debug(
+                f"type of var_binds: {type(var_binds)}\n"
+                f"var_binds: {var_binds}\n"
+                f"requested data format: {str(data_format)}"
+            )
             if data_format in self.data_format:
                 method = self.data_format.get(data_format)
                 result = method(var_binds)
