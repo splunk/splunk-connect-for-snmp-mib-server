@@ -28,21 +28,34 @@ profiles:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ["SNMPv2-MIB", "sysDescr"]
       - ["SNMPv2-MIB", "sysName"]
+      - ["SNMPv2-MIB", "sysObjectID"]
+      - ["SNMPv2-MIB", "sysContact"]
+      - ["SNMPv2-MIB", "sysLocation"]
+  BaseIFMeta:
+    frequency: 300
+    patterns:
+      - "^.*"
+    varBinds:
+      - ["IF-MIB", "ifType", "*"]
+      - ["IF-MIB", "ifMtu", "*"]
+      - ["IF-MIB", "ifSpeed", "*"]
+      - ["IF-MIB", "ifAdminStatus", "*"]
   BaseIF:
     frequency: 30
     patterns:
       - "^.*"
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-      - ["IF-MIB", "ifInOctets", "*"]
-      - ["IF-MIB", "ifInUcastPkts", "*"]
-      - ["IF-MIB", "ifInNUcastPkts", "*"]
       - ["IF-MIB", "ifInDiscards", "*"]
       - ["IF-MIB", "ifInErrors", "*"]
+      - ["IF-MIB", "ifInNUcastPkts", "*"]
+      - ["IF-MIB", "ifInOctets", "*"]
+      - ["IF-MIB", "ifInUcastPkts", "*"]
       - ["IF-MIB", "ifInUnknownProtos", "*"]
-      - ["IF-MIB", "ifOutOctets", "*"]
-      - ["IF-MIB", "ifOutUcastPkts", "*"]
-      - ["IF-MIB", "ifOutNUcastPkts", "*"]
       - ["IF-MIB", "ifOutDiscards", "*"]
       - ["IF-MIB", "ifOutErrors", "*"]
+      - ["IF-MIB", "ifOutNUcastPkts", "*"]
+      - ["IF-MIB", "ifOutOctets", "*"]
       - ["IF-MIB", "ifOutQLen", "*"]
+      - ["IF-MIB", "ifOutUcastPkts", "*"]
+      - ["IF-MIB", "ifOperStatus", "*"]
