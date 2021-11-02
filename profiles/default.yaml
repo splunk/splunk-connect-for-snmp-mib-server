@@ -34,4 +34,15 @@ profiles:
       - "^.*"
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-      - ["IF-MIB", "*"]
+      - ["IF-MIB", "ifInOctets", "*"]
+      - ["IF-MIB", "ifInUcastPkts", "*"]
+      - ["IF-MIB", "ifInNUcastPkts", "*"]
+      - ["IF-MIB", "ifInDiscards", "*"]
+      - ["IF-MIB", "ifInErrors", "*"]
+      - ["IF-MIB", "ifInUnknownProtos", "*"]
+      - ["IF-MIB", "ifOutOctets", "*"]
+      - ["IF-MIB", "ifOutUcastPkts", "*"]
+      - ["IF-MIB", "ifOutNUcastPkts", "*"]
+      - ["IF-MIB", "ifOutDiscards", "*"]
+      - ["IF-MIB", "ifOutErrors", "*"]
+      - ["IF-MIB", "ifOutQLen", "*"]
