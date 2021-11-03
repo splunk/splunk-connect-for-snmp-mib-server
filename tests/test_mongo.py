@@ -23,8 +23,6 @@ from splunk_connect_for_snmp_mib_server.mongo import MibsRepository  # noqa: E40
 
 def main():
     mongo_config = {
-        "host": "localhost",
-        "port": 27017,
         "database": "test",
         "collection": "mibs",
     }

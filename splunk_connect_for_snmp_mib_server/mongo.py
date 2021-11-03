@@ -25,10 +25,7 @@ logger = logging.getLogger(__name__)
 
 class MongoRepository:
     def __init__(self):
-        self._client = pymongo.MongoClient(
-            os.environ["MONGO_SERVICE_SERVICE_HOST"],
-            int(os.environ["MONGO_SERVICE_SERVICE_PORT"]),
-        )
+        self._client = pymongo.MongoClient(os.environ["MONGO_URI"])
         if os.environ.get("MONGO_USER"):
             self._client.admin.authenticate(
                 os.environ["MONGO_USER"],
