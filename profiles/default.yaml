@@ -14,24 +14,17 @@
 #
 
 profiles:
-  Walk:
-    #This results in walking about 4 times per day but avoids having the work trigger at the same time daily
-    frequency: 22000
-    patterns:
-      - "^."
-    varBinds:
-      - "1.3.6.1.2.1.2.*"
   #Uptime is very important we will check uptime once per minute
   BaseUpTime:
     frequency: 60
     patterns:
-      - "^.*"
+      - "^."
     varBinds:
       - ["SNMPv2-MIB", "sysUpTime", 0]
   BaseDeviceData:
     frequency: 600
     patterns:
-      - "^.*"
+      - "^."
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ["SNMPv2-MIB", "sysDescr"]
@@ -39,19 +32,10 @@ profiles:
       - ["SNMPv2-MIB", "sysObjectID"]
       - ["SNMPv2-MIB", "sysContact"]
       - ["SNMPv2-MIB", "sysLocation"]
-  BaseIFMeta:
-    frequency: 300
-    patterns:
-      - "^.*"
-    varBinds:
-      - ["IF-MIB", "ifType"]
-      - ["IF-MIB", "ifMtu"]
-      - ["IF-MIB", "ifSpeed"]
-      - ["IF-MIB", "ifAdminStatus"]
   BaseIF:
     frequency: 30
     patterns:
-      - "^.*"
+      - "^."
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ["IF-MIB", "ifInDiscards"]
@@ -66,4 +50,4 @@ profiles:
       - ["IF-MIB", "ifOutOctets"]
       - ["IF-MIB", "ifOutQLen"]
       - ["IF-MIB", "ifOutUcastPkts"]
-      - ["IF-MIB", "ifOperStatus"]
+
