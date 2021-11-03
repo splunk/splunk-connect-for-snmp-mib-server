@@ -44,26 +44,26 @@ profiles:
     patterns:
       - "^.*"
     varBinds:
-      - ["IF-MIB", "ifType", "*"]
-      - ["IF-MIB", "ifMtu", "*"]
-      - ["IF-MIB", "ifSpeed", "*"]
-      - ["IF-MIB", "ifAdminStatus", "*"]
+      - ["IF-MIB", "ifType"]
+      - ["IF-MIB", "ifMtu"]
+      - ["IF-MIB", "ifSpeed"]
+      - ["IF-MIB", "ifAdminStatus"]
   BaseIF:
     frequency: 30
     patterns:
       - "^.*"
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-      - ["IF-MIB", "ifInDiscards", "*"]
-      - ["IF-MIB", "ifInErrors", "*"]
-      - ["IF-MIB", "ifInNUcastPkts", "*"]
-      - ["IF-MIB", "ifInOctets", "*"]
-      - ["IF-MIB", "ifInUcastPkts", "*"]
-      - ["IF-MIB", "ifInUnknownProtos", "*"]
-      - ["IF-MIB", "ifOutDiscards", "*"]
-      - ["IF-MIB", "ifOutErrors", "*"]
-      - ["IF-MIB", "ifOutNUcastPkts", "*"]
-      - ["IF-MIB", "ifOutOctets", "*"]
-      - ["IF-MIB", "ifOutQLen", "*"]
-      - ["IF-MIB", "ifOutUcastPkts", "*"]
-      - ["IF-MIB", "ifOperStatus", "*"]
+      - ["IF-MIB", "ifInDiscards"]
+      - ["IF-MIB", "ifInErrors"]
+      - ["IF-MIB", "ifInNUcastPkts"]
+      - ["IF-MIB", "ifInOctets"]
+      - ["IF-MIB", "ifInUcastPkts"]
+      - ["IF-MIB", "ifInUnknownProtos"]
+      - ["IF-MIB", "ifOutDiscards"]
+      - ["IF-MIB", "ifOutErrors"]
+      - ["IF-MIB", "ifOutNUcastPkts"]
+      - ["IF-MIB", "ifOutOctets"]
+      - ["IF-MIB", "ifOutQLen"]
+      - ["IF-MIB", "ifOutUcastPkts"]
+      - ["IF-MIB", "ifOperStatus"]
