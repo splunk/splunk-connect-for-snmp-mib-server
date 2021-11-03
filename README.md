@@ -52,8 +52,7 @@ cd "splunk-connect-for-snmp-mib-server"
 
 #### Setup Environment for Mib Server
 ```
-export MONGO_SERVICE_SERVICE_HOST=<mongo_host>
-export MONGO_SERVICE_SERVICE_PORT=<mongo_port>
+export MONGO_URI=mongodb://host:27017
 export MIBS_FILES_URL=http://0.0.0.0:5000/files/asn1/@mib@
 ```
 #### Install Poetry

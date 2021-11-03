@@ -22,7 +22,7 @@ license = "APACHE-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pymongo = "^3.11.3"
+pymongo = {version = "^3.11.3", extras = ["srv"]} 
 pysnmp = "^4.4.12"
 requests = "^2.25.1"
 PyYAML = "^5.4.1"

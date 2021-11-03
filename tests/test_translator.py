@@ -75,8 +75,7 @@ class TranslatorTest(TestCase):
             os.environ,
             {
                 "MIBS_FILES_URL": "http://0.0.0.0:5000/files/asn1/@mib@",
-                "MONGO_SERVICE_SERVICE_HOST": "localhost",
-                "MONGO_SERVICE_SERVICE_PORT": "27017",
+                "MONGO_URI": "mongodb://localhost:27017",
             },
         )
         cls.env_patcher.start()
