@@ -14,8 +14,16 @@
 #
 
 profiles:
+  Walk:
+    #This results in walking about 4 times per day but avoids having the work trigger at the same time daily
+    frequency: 22000
+    patterns:
+      - "^."
+    varBinds:
+      - "1.3.6.1.2.1.2.*"
+  #Uptime is very important we will check uptime once per minute
   BaseUpTime:
-    frequency: 30
+    frequency: 60
     patterns:
       - "^.*"
     varBinds:
