@@ -231,12 +231,17 @@ class Translator:
         index_row = self._mib_view_controller.mibBuilder.mibSymbols[family].get(label)
         index_result = dict()
 
-        while abs(label_index) < len(object_identity.getLabel()) and type(index_row).__name__ == 'MibTableColumn':
+        while (
+            abs(label_index) < len(object_identity.getLabel())
+            and type(index_row).__name__ == "MibTableColumn"
+        ):
             label_index = label_index - 1
             label = object_identity.getLabel()[label_index]
-            index_row = self._mib_view_controller.mibBuilder.mibSymbols[family].get(label)
+            index_row = self._mib_view_controller.mibBuilder.mibSymbols[family].get(
+                label
+            )
 
-        if index_row and type(index_row).__name__ == 'MibTableRow':
+        if index_row and type(index_row).__name__ == "MibTableRow":
             index_tuple = [v.prettyPrint() for v in index_tuple]
             index_names = [v[2] for v in index_row.getIndexNames()]
             index_result = dict(zip(index_names, index_tuple))
