@@ -26,6 +26,3 @@ mongo:
   mib:
     database: "files"
     collection: "mib_files"
-  profile:
-    database: "profiles"
-    collection: "profiles"
