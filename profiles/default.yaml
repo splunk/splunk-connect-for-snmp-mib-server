@@ -18,13 +18,13 @@ profiles:
   BaseUpTime:
     frequency: 60
     patterns:
-      - "^."
+      - "^.*"
     varBinds:
       - ["SNMPv2-MIB", "sysUpTime", 0]
   BaseDeviceData:
     frequency: 600
     patterns:
-      - "^."
+      - "^.*"
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ["SNMPv2-MIB", "sysDescr"]
@@ -35,7 +35,7 @@ profiles:
   BaseIF:
     frequency: 30
     patterns:
-      - "^."
+      - "^.*"
     varBinds:
       # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
       - ["IF-MIB", "ifInDiscards"]
@@ -50,4 +50,3 @@ profiles:
       - ["IF-MIB", "ifOutOctets"]
       - ["IF-MIB", "ifOutQLen"]
       - ["IF-MIB", "ifOutUcastPkts"]
-
