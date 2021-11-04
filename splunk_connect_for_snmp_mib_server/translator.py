@@ -220,7 +220,29 @@ class Translator:
             else:
                 return None
 
-        return translated_var_bind.prettyPrint().replace(" = ", "=")
+        index_result = self.parse_index(translated_var_bind)
+        return translated_var_bind.prettyPrint().replace(" = ", "="), index_result
+
+    def parse_index(self, translated_var_bind):
+        object_identity, object_value = translated_var_bind
+        index_tuple = object_identity.getMibSymbol()[2]
+        family = object_identity.getMibSymbol()[0]
+        label_index = -1
+        label = object_identity.getLabel()[label_index]
+        index_row = self._mib_view_controller.mibBuilder.mibSymbols[family].get(label)
+        index_result = dict()
+
+        while abs(label_index) < len(object_identity.getLabel()) and type(index_row).__name__ == 'MibTableColumn':
+            label_index = label_index - 1
+            label = object_identity.getLabel()[label_index]
+            index_row = self._mib_view_controller.mibBuilder.mibSymbols[family].get(label)
+
+        if index_row and type(index_row).__name__ == 'MibTableRow':
+            index_tuple = [v.prettyPrint() for v in index_tuple]
+            index_names = [v[2] for v in index_row.getIndexNames()]
+            index_result = dict(zip(index_names, index_tuple))
+
+        return index_result
 
     # Translate SNMP PDU varBinds into MIB objects using custom translation table
     def custom_translator(self, oid):
@@ -270,7 +292,7 @@ class Translator:
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
-            translated_mib_string = self.mib_translator(var_bind)
+            translated_mib_string, parsed_index = self.mib_translator(var_bind)
             if translated_mib_string:
                 translated_mib_string = '{translated_oid}="{translated_value}"'.format(
                     translated_oid=translated_mib_string.split("=")[0],
@@ -329,7 +351,7 @@ class Translator:
         val_type = var_bind["val_type"]
 
         # mib translation for oid (val keep same for original, mib translation, custom translation)
-        translated_mib_string = self.mib_translator(var_bind)
+        translated_mib_string, parsed_index = self.mib_translator(var_bind)
         if translated_mib_string:
             translated_oid = translated_mib_string.split("=")[0]
             translated_val = translated_mib_string.split("=")[1]
@@ -351,6 +373,8 @@ class Translator:
         metric_data["metric_type"] = val_type
         if custom_translated_oid:
             metric_data["custom_metric_name"] = custom_translated_oid
+        if parsed_index:
+            metric_data["parsed_index"] = parsed_index
         logger.debug(f"metric_data: {json.dumps(metric_data)}")
         return metric_data
 
