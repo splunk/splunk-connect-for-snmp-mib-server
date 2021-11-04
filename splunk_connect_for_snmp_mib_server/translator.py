@@ -215,9 +215,9 @@ class Translator:
 
                 except Exception as e:
                     logger.debug(f"Error happened during translation checking: {e}")
-                    return None
+                    return None, None
             else:
-                return None
+                return None, None
 
         index_result = self.parse_index(translated_var_bind)
         return translated_var_bind.prettyPrint().replace(" = ", "="), index_result
