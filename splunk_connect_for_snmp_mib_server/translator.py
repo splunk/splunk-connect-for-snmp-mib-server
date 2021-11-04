@@ -212,7 +212,6 @@ class Translator:
                     logger.debug(
                         f"* Re-Translated PDU: {translated_var_bind.prettyPrint()}"
                     )
-                    return translated_var_bind.prettyPrint().replace(" = ", "=")
 
                 except Exception as e:
                     logger.debug(f"Error happened during translation checking: {e}")
