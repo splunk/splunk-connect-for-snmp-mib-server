@@ -219,15 +219,13 @@ class Translator:
 
                 except Exception as e:
                     logger.debug(f"Error happened during translation checking: {e}")
-                    return None, None, None
+                    return None, None, None, None, None
             else:
-                return None, None, None
+                return None, None, None, None, None
 
         index_result, raw_oid, family, name = self.parse_index(translated_var_bind)
-        object_identity, object_value = translated_var_bind
 
-        result = f"{family}::{name}={object_value.prettyPrint()}"
-        return result, index_result, raw_oid
+        return translated_var_bind.prettyPrint().replace(" = ", "="), index_result, raw_oid, family, name
 
     def parse_index(self, translated_var_bind):
         object_identity, object_value = translated_var_bind
@@ -306,7 +304,7 @@ class Translator:
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
-            translated_mib_string, parsed_index, raw_oid = self.mib_translator(var_bind)
+            translated_mib_string, parsed_index, raw_oid, family, name = self.mib_translator(var_bind)
             if translated_mib_string:
                 translated_mib_string = '{translated_oid}="{translated_value}"'.format(
                     translated_oid=translated_mib_string.split("=")[0],
@@ -315,7 +313,7 @@ class Translator:
             else:
                 translated_mib_string = ""
 
-            original_oid = '{oid}="{value}"'.format(oid=raw_oid, value=value)
+            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
@@ -344,8 +342,9 @@ class Translator:
                 ]
             )
 
-            for key, value in parsed_index.items():
-                trap_event_string += f' {key}="{value}"'
+            if parsed_index:
+                for key, value in parsed_index.items():
+                    trap_event_string += f'{key}="{value}" '
 
             trap_event_string += "\n"
 
@@ -365,16 +364,17 @@ class Translator:
         var_bind = var_bind[index]
         metric_data = {}
 
+        oid = var_bind["oid"]
         value = var_bind["val"]
         val_type = var_bind["val_type"]
 
         # mib translation for oid (val keep same for original, mib translation, custom translation)
-        translated_mib_string, parsed_index, raw_oid = self.mib_translator(var_bind)
+        translated_mib_string, parsed_index, raw_oid, family, name = self.mib_translator(var_bind)
         if translated_mib_string:
-            translated_oid = translated_mib_string.split("=")[0]
+            translated_oid = f"{family}::{name}"
             translated_val = translated_mib_string.split("=")[1]
         else:
-            translated_oid = raw_oid
+            translated_oid = raw_oid if raw_oid else oid
             translated_val = value
 
         # custom translation for oid
