@@ -28,7 +28,7 @@ from pysnmp.hlapi import (
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
-from splunk_connect_for_snmp_mib_server.translator import Translator
+from splunk_connect_for_snmp_mib_server.translator import Translator, convert_tuple_to_oid
 
 logger = logging.getLogger(__name__)
 
@@ -332,3 +332,8 @@ class TranslatorTest(TestCase):
         for i in range(0, len(input_var_binds)):
             translated_dict = self.my_translator.format_metric_data(input_var_binds, i)
             assert translated_dict["metric_name"] == expected_values[i]
+
+    def test_convert_tuple_to_oid(self):
+        oid_tuple = (1, 3, 6, 1, 2, 1)
+        result = convert_tuple_to_oid(oid_tuple)
+        assert "1.3.6.1.2.1" == result
