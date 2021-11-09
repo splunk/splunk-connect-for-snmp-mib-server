@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def convert_tuple_to_oid(tup):
-    return'.'.join(map(str, tup))
+    return ".".join(map(str, tup))
 
 
 class Translator:
@@ -225,7 +225,13 @@ class Translator:
 
         index_result, raw_oid, family, name = self.parse_index(translated_var_bind)
 
-        return translated_var_bind.prettyPrint().replace(" = ", "="), index_result, raw_oid, family, name
+        return (
+            translated_var_bind.prettyPrint().replace(" = ", "="),
+            index_result,
+            raw_oid,
+            family,
+            name,
+        )
 
     def parse_index(self, translated_var_bind):
         object_identity, object_value = translated_var_bind
@@ -304,7 +310,13 @@ class Translator:
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
-            translated_mib_string, parsed_index, raw_oid, family, name = self.mib_translator(var_bind)
+            (
+                translated_mib_string,
+                parsed_index,
+                raw_oid,
+                family,
+                name,
+            ) = self.mib_translator(var_bind)
             if translated_mib_string:
                 translated_mib_string = '{translated_oid}="{translated_value}"'.format(
                     translated_oid=translated_mib_string.split("=")[0],
@@ -369,7 +381,13 @@ class Translator:
         val_type = var_bind["val_type"]
 
         # mib translation for oid (val keep same for original, mib translation, custom translation)
-        translated_mib_string, parsed_index, raw_oid, family, name = self.mib_translator(var_bind)
+        (
+            translated_mib_string,
+            parsed_index,
+            raw_oid,
+            family,
+            name,
+        ) = self.mib_translator(var_bind)
         if translated_mib_string:
             translated_oid = f"{family}::{name}"
             translated_val = translated_mib_string.split("=")[1]

@@ -28,7 +28,10 @@ from pysnmp.hlapi import (
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp_mib_server.snmp_mib_server import upload_mibs
-from splunk_connect_for_snmp_mib_server.translator import Translator, convert_tuple_to_oid
+from splunk_connect_for_snmp_mib_server.translator import (
+    Translator,
+    convert_tuple_to_oid,
+)
 
 logger = logging.getLogger(__name__)
 
