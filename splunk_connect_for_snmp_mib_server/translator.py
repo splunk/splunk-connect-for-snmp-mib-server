@@ -25,6 +25,10 @@ from splunk_connect_for_snmp_mib_server.mongo import MibsRepository, OidsReposit
 logger = logging.getLogger(__name__)
 
 
+def convert_tuple_to_oid(tup):
+    return ".".join(map(str, tup))
+
+
 class Translator:
     def __init__(self, server_config):
         self._server_config = server_config
@@ -215,12 +219,19 @@ class Translator:
 
                 except Exception as e:
                     logger.debug(f"Error happened during translation checking: {e}")
-                    return None, None
+                    return None, None, None, None, None
             else:
-                return None, None
+                return None, None, None, None, None
 
-        index_result = self.parse_index(translated_var_bind)
-        return translated_var_bind.prettyPrint().replace(" = ", "="), index_result
+        index_result, raw_oid, family, name = self.parse_index(translated_var_bind)
+
+        return (
+            translated_var_bind.prettyPrint().replace(" = ", "="),
+            index_result,
+            raw_oid,
+            family,
+            name,
+        )
 
     def parse_index(self, translated_var_bind):
         object_identity, object_value = translated_var_bind
@@ -246,7 +257,10 @@ class Translator:
             index_names = [v[2] for v in index_row.getIndexNames()]
             index_result = dict(zip(index_names, index_tuple))
 
-        return index_result
+        raw_oid = convert_tuple_to_oid(object_identity.getMibNode().getName())
+        family, name = object_identity.getMibSymbol()[0:2]
+
+        return index_result, raw_oid, family, name
 
     # Translate SNMP PDU varBinds into MIB objects using custom translation table
     def custom_translator(self, oid):
@@ -292,11 +306,17 @@ class Translator:
                 custom_translated_value = self.custom_translator(value)
 
             offset += 1
-            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
+
             oid_type_string = 'oid-type{offset}="{oid_type}"'.format(
                 offset=offset, oid_type=name_type
             )
-            translated_mib_string, parsed_index = self.mib_translator(var_bind)
+            (
+                translated_mib_string,
+                parsed_index,
+                raw_oid,
+                family,
+                name,
+            ) = self.mib_translator(var_bind)
             if translated_mib_string:
                 translated_mib_string = '{translated_oid}="{translated_value}"'.format(
                     translated_oid=translated_mib_string.split("=")[0],
@@ -305,6 +325,7 @@ class Translator:
             else:
                 translated_mib_string = ""
 
+            original_oid = '{oid}="{value}"'.format(oid=oid, value=value)
             if custom_translated_oid:
                 custom_translated_mib_string = (
                     '{custom_translated_oid}="{custom_translated_value}"'.format(
@@ -332,6 +353,11 @@ class Translator:
                     #
                 ]
             )
+
+            if parsed_index:
+                for key, value in parsed_index.items():
+                    trap_event_string += f'{key}="{value}" '
+
             trap_event_string += "\n"
 
         trap_event_string = trap_event_string.rstrip("\n")  # remove trailing newline
@@ -355,16 +381,22 @@ class Translator:
         val_type = var_bind["val_type"]
 
         # mib translation for oid (val keep same for original, mib translation, custom translation)
-        translated_mib_string, parsed_index = self.mib_translator(var_bind)
+        (
+            translated_mib_string,
+            parsed_index,
+            raw_oid,
+            family,
+            name,
+        ) = self.mib_translator(var_bind)
         if translated_mib_string:
-            translated_oid = translated_mib_string.split("=")[0]
+            translated_oid = f"{family}::{name}"
             translated_val = translated_mib_string.split("=")[1]
         else:
-            translated_oid = oid
+            translated_oid = raw_oid if raw_oid else oid
             translated_val = value
 
         # custom translation for oid
-        custom_translated_oid = self.custom_translator(oid)
+        custom_translated_oid = self.custom_translator(raw_oid)
 
         # Construct metric data
         # .. Prefix the metric_name for UX in analytics workspace
