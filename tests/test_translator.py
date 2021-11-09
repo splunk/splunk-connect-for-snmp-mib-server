@@ -212,7 +212,7 @@ class TranslatorTest(TestCase):
         translated_dict = self.my_translator.format_metric_data(input_var_binds)
         for required_key in ["metric_name", "_value", "metric_type"]:
             assert required_key in translated_dict
-        assert translated_dict["metric_name"] == "sc4snmp.SNMPv2-MIB.sysUpTime_0"
+        assert translated_dict["metric_name"] == "sc4snmp.SNMPv2-MIB.sysUpTime"
         input_var_bind = input_var_binds[0]
         assert translated_dict["_value"] == input_var_bind["val"]
         assert translated_dict["metric_type"] == input_var_bind["val_type"]
@@ -275,16 +275,16 @@ class TranslatorTest(TestCase):
         )
 
         expected_translations = (
-            "sc4snmp.IF-MIB.ifMtu_1",
-            "sc4snmp.SNMPv2-MIB.sysLocation_0",
-            "sc4snmp.IF-MIB.ifPhysAddress_2",
-            "sc4snmp.SNMPv2-MIB.sysORID_7",
-            "sc4snmp.TCP-MIB.tcpConnRemAddress_195_218_254_105_51684_194_67_10_226_22",
-            "sc4snmp.HOST-RESOURCES-MIB.hrDeviceErrors_1025",
-            "sc4snmp.IF-MIB.ifHighSpeed_2",
-            "sc4snmp.SNMPv2-MIB.sysUpTime_0",
+            "sc4snmp.IF-MIB.ifMtu",
+            "sc4snmp.SNMPv2-MIB.sysLocation",
+            "sc4snmp.IF-MIB.ifPhysAddress",
+            "sc4snmp.SNMPv2-MIB.sysORID",
+            "sc4snmp.TCP-MIB.tcpConnRemAddress",
+            "sc4snmp.HOST-RESOURCES-MIB.hrDeviceErrors",
+            "sc4snmp.IF-MIB.ifHighSpeed",
+            "sc4snmp.SNMPv2-MIB.sysUpTime",
             "sc4snmp.1_3_6_1_4_1_2021_10_1_6_1",
-            "sc4snmp.IF-MIB.ifHCOutOctets_1",
+            "sc4snmp.IF-MIB.ifHCOutOctets",
         )
         assert (
             len(oids) == len(str_values)
@@ -326,7 +326,7 @@ class TranslatorTest(TestCase):
         expected_values = [
             "sc4snmp.VMSTORE-MIB.mirrorLatency",
             "sc4snmp.VERITAS-APPLIANCE-MONITORING-MIB.vrtssystemName",
-            "sc4snmp.HOST-RESOURCES-MIB.hrSystemProcesses_0",
+            "sc4snmp.HOST-RESOURCES-MIB.hrSystemProcesses",
         ]
 
         for i in range(0, len(input_var_binds)):
