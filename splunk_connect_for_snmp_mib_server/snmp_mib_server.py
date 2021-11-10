@@ -15,6 +15,7 @@
 #   ########################################################################
 import argparse
 import logging
+import threading
 import time
 
 import yaml
@@ -77,7 +78,9 @@ def main():
 
     upload_mibs(server_config)
     mib_server = MibServer(args, server_config)
-    mib_server.run_mib_server()
+    threading.Thread(target=mib_server.run_mib_server).start()
+    time.sleep(5)
+    mib_server.notify_startup()
 
 
 if __name__ == "__main__":

@@ -14,7 +14,10 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import os
 
+import requests
+from checksumdir import dirhash
 from flask import Flask, request
 from flask_autoindex import AutoIndex
 
@@ -80,3 +83,8 @@ class MibServer:
     def run_mib_server(self):
         # poetry run fails when debug=True
         self._flask_app.run(host="0.0.0.0", port=self._args.port)
+
+    def notify_startup(self):
+        profiles_hash = dirhash("profiles")
+        params = {"profiles_hash": profiles_hash}
+        requests.get(os.environ["SCHEDULER_REFRESH_URI"], params=params, timeout=3)
