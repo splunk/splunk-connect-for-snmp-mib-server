@@ -17,7 +17,6 @@ import logging
 import os
 
 import requests
-
 from checksumdir import dirhash
 from flask import Flask, request
 from flask_autoindex import AutoIndex
