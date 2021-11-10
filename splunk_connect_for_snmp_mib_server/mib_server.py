@@ -15,11 +15,9 @@
 #   ########################################################################
 import logging
 import os
-
-from checksumdir import dirhash
-
 import requests
 
+from checksumdir import dirhash
 from flask import Flask, request
 from flask_autoindex import AutoIndex
 
@@ -89,4 +87,4 @@ class MibServer:
     def notify_startup(self):
         profiles_hash = dirhash("profiles")
         params = {"profiles_hash": profiles_hash}
-        requests.get(os.environ["SCHEDULER_REFRESH_URI"], params=params)
+        requests.get(os.environ["SCHEDULER_REFRESH_URI"], params=params, timeout=3)
